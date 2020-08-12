@@ -5,33 +5,32 @@ import com.safetynet.Alerts.model.MedicalRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class MedicalRecordRepository {
 
-    @Autowired
-    StoredData storedData;
+    Map<String, MedicalRecord> medicalRecordsMap = new HashMap<>();
 
-    public void save(MedicalRecord medicalRecord) {
-        storedData.getMedicalRecordList().add(medicalRecord);
+    @Autowired
+    public MedicalRecordRepository(StoredData storedData) {
+        storedData.getMedicalRecordList().forEach(med -> medicalRecordsMap.put(med.getFirstName()
+                + med.getLastName(), med));
     }
 
-    public void delete(MedicalRecord medicalRecord) {
-        storedData.getMedicalRecordList().remove(medicalRecord);
+    public MedicalRecord save(MedicalRecord med) {
+        medicalRecordsMap.put(med.getFirstName() + med.getLastName(), med);
+
+        return med;
+    }
+
+    public void delete(MedicalRecord med) {
+        medicalRecordsMap.remove(med.getFirstName() + med.getLastName());
     }
 
     public MedicalRecord findByIdentity(String firstName, String lastName) {
-        List<MedicalRecord> medicalRecords = storedData.getMedicalRecordList();
-        for (MedicalRecord medicalRecord : medicalRecords) {
-
-            if (medicalRecord.getFirstName().equals(firstName)
-                    && medicalRecord.getLastName().equals(lastName)) {
-
-                return medicalRecord;
-            }
-        }
-        return null;
+        return medicalRecordsMap.get(firstName + lastName);
     }
 
 }
