@@ -5,36 +5,62 @@ import com.safetynet.Alerts.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class PersonRepository {
 
+    Map<String, Person> personsMap = new HashMap<>();
+
     @Autowired
-    StoredData storedData;
+    public PersonRepository(StoredData storedData) {
+        storedData.getPersonList().forEach(person -> personsMap.put(person.getFirstName()
+                + person.getLastName(), person));
+    }
 
     public List<Person> getPersonList() {
-        return storedData.getPersonList();
+        Collection personList = personsMap.values();
+        return new ArrayList<>(personList);
+
     }
 
-    public void save(Person person) {
-        storedData.getPersonList().add(person);
+    public Person save(Person pers) {
+        personsMap.put(pers.getFirstName() + pers.getLastName(), pers);
+
+        return pers;
     }
 
-    public void delete(Person person) {
-        storedData.getPersonList().remove(person);
-
+    public void delete(Person pers) {
+        personsMap.remove(pers.getFirstName() + pers.getLastName());
     }
 
     public Person findByIdentity(String firstName, String lastName) {
-        List<Person> persons = storedData.getPersonList();
+        return personsMap.get(firstName + lastName);
+    }
+
+    public List<Person> findByCity(String city) {
+        Collection<Person> persons = personsMap.values();
+        List<Person> personsByCity = new ArrayList<>();
 
         for (Person person : persons) {
-            if (person.getFirstName().equals(firstName) && person.getLastName().equals(lastName)) {
-                return person;
+            if (person.getCity().equals(city)) {
+                personsByCity.add(person);
             }
         }
-        return null;
+
+        return personsByCity;
     }
-    
+
+    public List<Person> findByAddress(String address) {
+        Collection<Person> persons = personsMap.values();
+        List<Person> personsByAddress = new ArrayList<>();
+
+        for (Person person : persons) {
+            if (person.getAddress().equals(address)) {
+                personsByAddress.add(person);
+            }
+        }
+
+        return personsByAddress;
+    }
 }
