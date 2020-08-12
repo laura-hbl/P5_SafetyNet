@@ -63,21 +63,12 @@ public class DataReader {
                 MedicalRecord medicalRecord = new MedicalRecord(firstName.asText(), lastName.asText(),
                         birthDate.asText(), medicationsList, allergiesList);
 
-                searchPerson(firstName.asText(), lastName.asText()).setMedicalRecord(medicalRecord);
                 medicalRecordList.add(medicalRecord);
             }
         }
+
         return new StoredData(personList, fireStationList, medicalRecordList);
     }
 
-    public static Person searchPerson(String firstName, String lastName) {
-        for (Person person: personList) {
-            if (person.getLastName().equals(lastName) && person.getFirstName().equals(firstName)) {
-
-                return person;
-            }
-        }
-        return null;
-    }
 }
 
