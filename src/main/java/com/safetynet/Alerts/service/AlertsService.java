@@ -37,11 +37,11 @@ public class AlertsService {
         for (Person pers : persons) {
             for (String address : addresses) {
                 if (pers.getAddress().equals(address)) {
-                    MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(), pers.getLastName());
+                    MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                            pers.getLastName());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
                     LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
                     int age = ageCalculator.getAge(birthDate);
-
                     if (age < adultAge) {
                         childCount++;
                     } else {
@@ -56,13 +56,41 @@ public class AlertsService {
         return new PersonsByStationDTO(list, adultCount, childCount);
     }
 
+    public PhoneAlertDTO getPhonesByStation(int station) {
+        List<Person> persons = personService.getPersonList();
+        List<String> addresses = fireStationService.getAddressesByStation(station);
+        List<String> phones = new ArrayList<>();
+
+        for (Person pers : persons) {
+            for (String address : addresses) {
+                if (pers.getAddress().equals(address)) {
+                    phones.add(pers.getPhone());
+                }
+            }
+        }
+
+        return new PhoneAlertDTO(phones);
+    }
+
+    public CommunityEmailDTO getEmailsByCity(String city) {
+        List<Person> personsByCity = personService.getPersonsByCity(city);
+        List<String> emails = new ArrayList<>();
+
+        for (Person person : personsByCity) {
+            emails.add(person.getEmail());
+        }
+
+        return new CommunityEmailDTO(emails);
+    }
+
     public ChildAlertDTO getChildByAddress(String address) {
         List<Person> personsByAddress = personService.getPersonsByAddress(address);
         List<Child> childList = new ArrayList<>();
         List<String> adultList = new ArrayList<>();
 
         for (Person pers : personsByAddress) {
-            MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(), pers.getLastName());
+            MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                    pers.getLastName());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
             LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
             int age = ageCalculator.getAge(birthDate);
@@ -75,5 +103,46 @@ public class AlertsService {
         }
 
         return new ChildAlertDTO(childList, adultList);
+    }
+
+    public PersonInfoDTO getInfoByIdentity(String firstName, String lastName) {
+        List<Person> persons = personService.getPersonList();
+        List<PersonInfo> personsInfo = new ArrayList<>();
+
+        for (Person pers : persons) {
+
+            if (pers.getLastName().equals(lastName)) {
+                MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                        pers.getLastName());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+                LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
+                int age = ageCalculator.getAge(birthDate);
+
+                personsInfo.add(new PersonInfo(pers.getLastName(), pers.getAddress(),
+                        age, pers.getEmail(), med.getMedications(), med.getAllergies()));
+            }
+        }
+
+        return new PersonInfoDTO(personsInfo);
+    }
+
+    public FireDTO getPersonsByAddress(String address) {
+        List<Person> personsByAddress = personService.getPersonsByAddress(address);
+        List<PersonAddress> persons = new ArrayList<>();
+
+        for (Person pers : personsByAddress) {
+            MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                    pers.getLastName());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+            LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
+            int age = ageCalculator.getAge(birthDate);
+            persons.add(new PersonAddress(pers.getLastName(), pers.getPhone(),
+                    age, med.getMedications(), med.getAllergies()));
+        }
+
+        FireStation fireStation = fireStationService.getFireStationByAddress(address);
+        int station = fireStation.getStation();
+
+        return new FireDTO(station, persons);
     }
 }
