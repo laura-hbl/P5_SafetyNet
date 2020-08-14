@@ -6,20 +6,20 @@ import java.util.List;
 
 public class ChildAlertDTO {
 
-    private List<Child> Child;
+    private List<Child> child;
     private List<String> homeMembers;
 
-    public ChildAlertDTO(List<com.safetynet.Alerts.model.Child> child, List<String> homeMembers) {
-        Child = child;
+    public ChildAlertDTO(List<Child> child, List<String> homeMembers) {
+        this.child = child;
         this.homeMembers = homeMembers;
     }
 
-    public List<com.safetynet.Alerts.model.Child> getChild() {
-        return Child;
+    public List<Child> getChild() {
+        return child;
     }
 
-    public void setChild(List<com.safetynet.Alerts.model.Child> child) {
-        Child = child;
+    public void setChild(List<Child> child) {
+        this.child = child;
     }
 
     public List<String> getHomeMembers() {
