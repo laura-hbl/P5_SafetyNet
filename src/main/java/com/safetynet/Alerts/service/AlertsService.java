@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class AlertsService {
+public class AlertsService implements IAlertsService {
 
     @Autowired
     private PersonService personService;
@@ -144,5 +144,37 @@ public class AlertsService {
         int station = fireStation.getStation();
 
         return new FireDTO(station, persons);
+    }
+
+    public FloodDTO getHouseholdsByStation(List<Integer> stations) {
+        List<HouseholdsByStationDTO> householdsByStationDTO = new ArrayList<>();
+        List<String> addressAll = new ArrayList<>();
+
+        for (int station : stations) {
+            List<String> addressesByStation = fireStationService.getAddressesByStation(station);
+            List<Household> households = new ArrayList<>();
+
+            for (String address : addressesByStation) {
+                if (!addressAll.contains(address)) {
+                    addressAll.add(address);
+                    List<Person> persons = personService.getPersonsByAddress(address);
+                    List<PersonAddress> personAddresses = new ArrayList<>();
+
+                    for (Person pers : persons) {
+                        MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                                pers.getLastName());
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+                        LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
+                        int age = ageCalculator.getAge(birthDate);
+                        personAddresses.add(new PersonAddress(pers.getLastName(), pers.getPhone(),
+                                age, med.getMedications(), med.getAllergies()));
+                    }
+                    households.add(new Household(address, personAddresses));
+                }
+            }
+            householdsByStationDTO.add(new HouseholdsByStationDTO(station, households));
+        }
+
+        return new FloodDTO(householdsByStationDTO);
     }
 }
