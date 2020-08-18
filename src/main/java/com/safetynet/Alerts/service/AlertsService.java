@@ -3,6 +3,8 @@ package com.safetynet.Alerts.service;
 import com.safetynet.Alerts.dto.*;
 import com.safetynet.Alerts.model.*;
 import com.safetynet.Alerts.util.AgeCalculator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +16,27 @@ import java.util.List;
 @Service
 public class AlertsService implements IAlertsService {
 
-    @Autowired
-    private PersonService personService;
+    private static final Logger LOGGER = LogManager.getLogger(AlertsService.class);
 
-    @Autowired
-    private FireStationService fireStationService;
+    private final PersonService personService;
 
-    @Autowired
-    private MedicalRecordService medicalRecordService;
+    private final FireStationService fireStationService;
 
-    private static AgeCalculator ageCalculator = new AgeCalculator();
+    private final MedicalRecordService medicalRecordService;
+
+    private static final AgeCalculator ageCalculator = new AgeCalculator();
     private static final int adultAge = 19;
 
+    @Autowired
+    public AlertsService(PersonService personService, FireStationService fireStationService, MedicalRecordService
+            medicalRecordService) {
+        this.personService = personService;
+        this.fireStationService = fireStationService;
+        this.medicalRecordService = medicalRecordService;
+    }
+
     public PersonsByStationDTO getPersonsByStation(int station) {
+        LOGGER.debug("Inside AlertsService.getPersonsByStation for station number : " +station);
         int adultCount = 0;
         int childCount = 0;
 
@@ -56,7 +66,30 @@ public class AlertsService implements IAlertsService {
         return new PersonsByStationDTO(list, adultCount, childCount);
     }
 
+    public PersonInfoDTO getInfoByIdentity(String firstName, String lastName) {
+        LOGGER.debug("Inside AlertsService.getInfoByIdentity for : " +firstName, lastName);
+        List<Person> persons = personService.getPersonList();
+        List<PersonInfo> personsInfo = new ArrayList<>();
+
+        for (Person pers : persons) {
+
+            if (pers.getLastName().equals(lastName)) {
+                MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                        pers.getLastName());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
+                LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
+                int age = ageCalculator.getAge(birthDate);
+
+                personsInfo.add(new PersonInfo(pers.getLastName(), pers.getAddress(),
+                        age, pers.getEmail(), med.getMedications(), med.getAllergies()));
+            }
+        }
+
+        return new PersonInfoDTO(personsInfo);
+    }
+
     public PhoneAlertDTO getPhonesByStation(int station) {
+        LOGGER.debug("Inside AlertsService.getPhonesByStation for station : " +station);
         List<Person> persons = personService.getPersonList();
         List<String> addresses = fireStationService.getAddressesByStation(station);
         List<String> phones = new ArrayList<>();
@@ -73,6 +106,7 @@ public class AlertsService implements IAlertsService {
     }
 
     public CommunityEmailDTO getEmailsByCity(String city) {
+        LOGGER.debug("Inside FireStation.getEmailsByCity method for city : " +city);
         List<Person> personsByCity = personService.getPersonsByCity(city);
         List<String> emails = new ArrayList<>();
 
@@ -84,6 +118,7 @@ public class AlertsService implements IAlertsService {
     }
 
     public ChildAlertDTO getChildByAddress(String address) {
+        LOGGER.debug("Inside AlertsService.getChildByAddress for adress : " +address);
         List<Person> personsByAddress = personService.getPersonsByAddress(address);
         List<Child> childList = new ArrayList<>();
         List<String> adultList = new ArrayList<>();
@@ -105,28 +140,8 @@ public class AlertsService implements IAlertsService {
         return new ChildAlertDTO(childList, adultList);
     }
 
-    public PersonInfoDTO getInfoByIdentity(String firstName, String lastName) {
-        List<Person> persons = personService.getPersonList();
-        List<PersonInfo> personsInfo = new ArrayList<>();
-
-        for (Person pers : persons) {
-
-            if (pers.getLastName().equals(lastName)) {
-                MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
-                        pers.getLastName());
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
-                LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
-                int age = ageCalculator.getAge(birthDate);
-
-                personsInfo.add(new PersonInfo(pers.getLastName(), pers.getAddress(),
-                        age, pers.getEmail(), med.getMedications(), med.getAllergies()));
-            }
-        }
-
-        return new PersonInfoDTO(personsInfo);
-    }
-
     public FireDTO getPersonsByAddress(String address) {
+        LOGGER.debug("Inside AlertsService.getPersonsByAddress for address : " +address);
         List<Person> personsByAddress = personService.getPersonsByAddress(address);
         List<PersonAddress> persons = new ArrayList<>();
 
@@ -147,6 +162,7 @@ public class AlertsService implements IAlertsService {
     }
 
     public FloodDTO getHouseholdsByStation(List<Integer> stations) {
+        LOGGER.debug("Inside AlertsService.getHouseholdsByStation for stations : " +stations);
         List<HouseholdsByStationDTO> householdsByStationDTO = new ArrayList<>();
         List<String> addressAll = new ArrayList<>();
 

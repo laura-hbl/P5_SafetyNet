@@ -1,8 +1,12 @@
 package com.safetynet.Alerts.service;
 
 import com.safetynet.Alerts.dto.PersonDTO;
+import com.safetynet.Alerts.exception.DataAlreadyRegisteredException;
+import com.safetynet.Alerts.exception.DataNotFoundException;
 import com.safetynet.Alerts.model.Person;
 import com.safetynet.Alerts.repository.PersonRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,67 +15,86 @@ import java.util.List;
 @Service
 public class PersonService implements IPersonService {
 
+    private static final Logger LOGGER = LogManager.getLogger(PersonService.class);
+
+    private final PersonRepository personRepository;
+
     @Autowired
-    private PersonRepository personRepository;
+    public PersonService(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
 
     public Person createPerson(PersonDTO pers) {
+        LOGGER.debug("Inside PersonService.createPerson");
         Person personToSave = new Person(pers.getFirstName(), pers.getLastName(), pers.getAddress(),
                 pers.getCity(), pers.getZip(), pers.getPhone(), pers.getEmail());
         Person person = personRepository.findByIdentity(pers.getFirstName(), pers.getLastName());
 
-        if (person == null) {
-            return personRepository.save(personToSave);
+        if (person != null) {
+            throw new DataAlreadyRegisteredException("Person already registered");
         }
 
-        return null;
+        return personRepository.save(personToSave);
     }
 
     public Person updatePerson(PersonDTO pers) {
-
+        LOGGER.debug("Inside PersonService.updatePerson");
         Person personToUpdate = personRepository.findByIdentity(pers.getFirstName(), pers.getLastName());
 
-        if (personToUpdate != null) {
-            personToUpdate.setAddress(pers.getAddress());
-            personToUpdate.setCity(pers.getCity());
-            personToUpdate.setZip(pers.getZip());
-            personToUpdate.setPhone(pers.getPhone());
-            personToUpdate.setEmail(pers.getEmail());
-            return personToUpdate;
+        if (personToUpdate == null) {
+            throw new DataNotFoundException("Person not found");
         }
 
-        return null;
+        personToUpdate.setAddress(pers.getAddress());
+        personToUpdate.setCity(pers.getCity());
+        personToUpdate.setZip(pers.getZip());
+        personToUpdate.setPhone(pers.getPhone());
+        personToUpdate.setEmail(pers.getEmail());
+        return personToUpdate;
     }
 
     public void deletePerson(PersonDTO pers) {
+        LOGGER.debug("Inside PersonService.deletePerson : " + pers.getFirstName(), pers.getLastName());
         Person personToDelete = personRepository.findByIdentity(pers.getFirstName(), pers.getLastName());
 
-        if (personToDelete != null) {
-            personRepository.delete(personToDelete);
+        if (personToDelete == null) {
+            throw new DataNotFoundException("Person not found");
         }
+
+        personRepository.delete(personToDelete);
     }
 
     public List<Person> getPersonList() {
-        return personRepository.getPersonList();
+        LOGGER.debug("Inside PersonService.getPersonList");
+        List<Person> personList = personRepository.getPersonList();
+
+        if (personList == null) {
+            throw new DataNotFoundException("Failed to get person list");
+        }
+
+        return personList;
     }
 
     public List<Person> getPersonsByCity(String city) {
+        LOGGER.debug("Inside PersonService.getPersonsByCity method for city : " +city);
         List<Person> personsByCity = personRepository.findByCity(city);
 
-        if (personsByCity != null) {
-            return personsByCity;
+        if (personsByCity.isEmpty()) {
+            throw new DataNotFoundException("Failed to get persons for city : " +city);
         }
 
-        return null;
+        return personsByCity;
     }
 
     public List<Person> getPersonsByAddress(String address) {
+        LOGGER.debug("Inside PersonService.getPersonsByAddress for address : " +address);
         List<Person> personsByAddress = personRepository.findByAddress(address);
 
-        if (personsByAddress!= null) {
-            return personsByAddress;
+        if (personsByAddress.isEmpty()) {
+            throw new DataNotFoundException("Failed to get persons for address : " +address);
         }
 
-        return null;
+        return personsByAddress;
     }
 }
 
