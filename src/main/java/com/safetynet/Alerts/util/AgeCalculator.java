@@ -6,11 +6,11 @@ import org.apache.logging.log4j.Logger;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class AgeCalculator {
+public final class AgeCalculator {
 
     private static final Logger LOGGER = LogManager.getLogger(AgeCalculator.class);
 
-    public int getAge(LocalDate birthDate) {
+    public static int getAge(LocalDate birthDate) {
 
         LocalDate currentDate = LocalDate.now();
         int age = Period.between(birthDate, currentDate).getYears();
