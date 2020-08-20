@@ -39,15 +39,14 @@ public class FireStationService implements IFireStationService {
 
     public FireStation updateFireStation(FireStationDTO fireS) {
         LOGGER.debug("Inside FireStationService.updateFireStation");
-        FireStation fireStation = new FireStation(fireS.getAddress(), fireS.getStation());
-        FireStation fireStationUpdated = fireStationRepository.find(fireStation);
+        FireStation fireStationToUpdate = fireStationRepository.findByAddress(fireS.getAddress());
 
-        if (fireStationUpdated == null) {
+        if (fireStationToUpdate == null) {
             throw new DataNotFoundException("FireStation not found");
         }
 
-        fireStationUpdated.setStation(fireS.getStation());
-        return fireStationUpdated;
+        fireStationToUpdate.setStation(fireS.getStation());
+        return fireStationToUpdate;
     }
 
     public void deleteFireStation(FireStationDTO fireS) {
