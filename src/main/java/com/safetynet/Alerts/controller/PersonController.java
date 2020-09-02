@@ -1,8 +1,7 @@
 package com.safetynet.Alerts.controller;
 
 import com.safetynet.Alerts.dto.PersonDTO;
-import com.safetynet.Alerts.exception.DataAlreadyRegisteredException;
-import com.safetynet.Alerts.exception.DataNotFoundException;
+import com.safetynet.Alerts.exception.BadRequestException;
 import com.safetynet.Alerts.model.Person;
 import com.safetynet.Alerts.service.PersonService;
 import org.apache.logging.log4j.LogManager;
@@ -25,10 +24,12 @@ public class PersonController {
     }
 
     @PostMapping("/person")
-    public ResponseEntity<Person> createPerson(@RequestBody PersonDTO person)
-            throws DataAlreadyRegisteredException {
+    public ResponseEntity<Person> createPerson(@RequestBody PersonDTO person) {
         LOGGER.debug("Person CREATE Request on : " + person.getFirstName() + " " + person.getLastName());
 
+        if (person == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         Person personCreated = personService.createPerson(person);
 
         LOGGER.info("Person POST request - SUCCESS");
@@ -36,9 +37,12 @@ public class PersonController {
     }
 
     @PutMapping("/person")
-    public ResponseEntity<Person> updatePerson(@RequestBody PersonDTO person) throws DataNotFoundException {
+    public ResponseEntity<Person> updatePerson(@RequestBody PersonDTO person) {
         LOGGER.debug("Person UPDATE Request on : " + person.getFirstName() + " " + person.getLastName());
 
+        if (person == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         Person personUpdated = personService.updatePerson(person);
 
         LOGGER.info("Person PUT request - SUCCESS");
@@ -46,9 +50,12 @@ public class PersonController {
     }
 
     @DeleteMapping("/person")
-    public ResponseEntity<Void> deletePerson(@RequestBody PersonDTO person) throws DataNotFoundException {
+    public ResponseEntity<Void> deletePerson(@RequestBody PersonDTO person) {
         LOGGER.debug("Person DELETE Request on : " + person.getFirstName() + " " + person.getLastName());
 
+        if (person == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         personService.deletePerson(person);
 
         LOGGER.info("Person DELETE request - SUCCESS");

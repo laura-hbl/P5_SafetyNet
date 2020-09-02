@@ -1,8 +1,7 @@
 package com.safetynet.Alerts.controller;
 
 import com.safetynet.Alerts.dto.FireStationDTO;
-import com.safetynet.Alerts.exception.DataAlreadyRegisteredException;
-import com.safetynet.Alerts.exception.DataNotFoundException;
+import com.safetynet.Alerts.exception.BadRequestException;
 import com.safetynet.Alerts.model.FireStation;
 import com.safetynet.Alerts.service.FireStationService;
 import org.apache.logging.log4j.LogManager;
@@ -25,11 +24,13 @@ public class FireStationController {
     }
 
     @PostMapping("/firestation")
-    public ResponseEntity<FireStation> createFireStation(@RequestBody FireStationDTO fireS)
-            throws DataAlreadyRegisteredException {
+    public ResponseEntity<FireStation> createFireStation(@RequestBody FireStationDTO fireS) {
         LOGGER.debug("FireStation POST Request with address : {} and station number : {}",
                 fireS.getAddress(), fireS.getStation());
 
+        if (fireS == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         FireStation fireStationCreated = fireStationService.createFireStation(fireS);
 
         LOGGER.info("FireStation POST request - SUCCESS");
@@ -37,11 +38,13 @@ public class FireStationController {
     }
 
     @PutMapping("/firestation")
-    public ResponseEntity<FireStation> updateMedicalRecord(@RequestBody FireStationDTO fireS)
-            throws DataNotFoundException {
+    public ResponseEntity<FireStation> updateMedicalRecord(@RequestBody FireStationDTO fireS) {
         LOGGER.debug("FireStation PUT Request with address : {} and station number : {}",
                 fireS.getAddress(), fireS.getStation());
 
+        if (fireS == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         FireStation fireStationUpdated = fireStationService.updateFireStation(fireS);
 
         LOGGER.info("FireStation PUT request - SUCCESS");
@@ -49,10 +52,13 @@ public class FireStationController {
     }
 
     @DeleteMapping("/firestation")
-    public ResponseEntity deletePerson(@RequestBody FireStationDTO fireS) {
+    public ResponseEntity<Void> deletePerson(@RequestBody FireStationDTO fireS) {
         LOGGER.debug("FireStation DELETE Request with address : {} and station number : {}",
                 fireS.getAddress(), fireS.getStation());
 
+        if (fireS == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         fireStationService.deleteFireStation(fireS);
 
         LOGGER.info("FireStation DELETE request - SUCCESS");

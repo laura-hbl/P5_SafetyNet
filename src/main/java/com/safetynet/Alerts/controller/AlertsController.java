@@ -1,7 +1,7 @@
 package com.safetynet.Alerts.controller;
 
 import com.safetynet.Alerts.dto.*;
-import com.safetynet.Alerts.exception.DataNotFoundException;
+import com.safetynet.Alerts.exception.BadRequestException;
 import com.safetynet.Alerts.service.AlertsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,10 +27,12 @@ public class AlertsController {
     }
 
     @GetMapping("/firestation")
-    public ResponseEntity<PersonsByStationDTO> getPersonsByStation(@RequestParam("stationNumber") int station)
-            throws DataNotFoundException {
+    public ResponseEntity<PersonsByStationDTO> getPersonsByStation(@RequestParam("stationNumber") Integer station) {
         LOGGER.debug("GET Request on /firestation with station number {}", station);
 
+        if (station == null) {
+            throw new BadRequestException("Bad request : missing station parameter");
+        }
         PersonsByStationDTO personsByStationDTO = alertsService.getPersonsByStation(station);
 
         LOGGER.info("GET Request on /firestation - SUCCESS");
@@ -38,10 +40,13 @@ public class AlertsController {
     }
 
     @GetMapping("/childAlert")
-    public ResponseEntity<ChildAlertDTO> getChildByAddress(@RequestParam("address") String address)
-            throws DataNotFoundException {
+    public ResponseEntity<ChildAlertDTO> getChildByAddress(@RequestParam("address") String address) {
+
         LOGGER.debug("GET Request on /childAlert with address {}", address);
 
+        if (address.trim().length() == 0) {
+            throw new BadRequestException("Bad request : missing address parameter");
+        }
         ChildAlertDTO childAlertDTO = alertsService.getChildByAddress(address);
 
         LOGGER.info("GET Request on /childAlert - SUCCESS");
@@ -49,22 +54,27 @@ public class AlertsController {
     }
 
     @GetMapping("/phoneAlert")
-    public ResponseEntity<PhoneAlertDTO> getPhonesByStation(@RequestParam("firestation") int station)
-            throws DataNotFoundException {
+    public ResponseEntity<PhoneAlertDTO> getPhonesByStation(@RequestParam("firestation") Integer station) {
+
         LOGGER.debug("GET Request on /phoneAlert with station number {}", station);
 
+        if (station == null) {
+            throw new BadRequestException("Bad request : missing station parameter");
+        }
         PhoneAlertDTO phoneAlertDTO = alertsService.getPhonesByStation(station);
 
         LOGGER.info("GET Request on /phoneAlert - SUCCESS");
         return new ResponseEntity<>(phoneAlertDTO, HttpStatus.OK);
-
     }
 
     @GetMapping("/fire")
-    public ResponseEntity<FireDTO> getPersonsByAddress(@RequestParam("address") String address)
-            throws DataNotFoundException {
+    public ResponseEntity<FireDTO> getPersonsByAddress(@RequestParam("address") String address) {
+
         LOGGER.debug("GET Request on /fire with address {}", address);
 
+        if (address.trim().length() == 0) {
+            throw new BadRequestException("Bad request : missing address parameter");
+        }
         FireDTO fireDTO = alertsService.getPersonsByAddress(address);
 
         LOGGER.info("GET Request on /fire - SUCCESS");
@@ -72,10 +82,13 @@ public class AlertsController {
     }
 
     @GetMapping("/flood/stations")
-    public ResponseEntity<FloodDTO> getHouseholdsByStation(@RequestParam("stations") List<Integer> stations)
-            throws DataNotFoundException {
+    public ResponseEntity<FloodDTO> getHouseholdsByStation(@RequestParam("stations") List<Integer> stations) {
+
         LOGGER.debug("GET Request on /flood with stations numbers {}", stations);
 
+        if (stations.isEmpty()) {
+            throw new BadRequestException("Bad request : missing stations parameters");
+        }
         FloodDTO floodDTO = alertsService.getHouseholdsByStation(stations);
 
         LOGGER.info("GET Request on /flood - SUCCESS");
@@ -84,22 +97,27 @@ public class AlertsController {
 
     @GetMapping("/personInfo")
     public ResponseEntity<PersonInfoDTO> getPersonInfoByIdentity(@RequestParam("firstName") String firstName,
-                                                                 @RequestParam("lastName") String lastName)
-            throws DataNotFoundException {
+                                                                 @RequestParam("lastName") String lastName) {
+
         LOGGER.debug("GET Request on /personInfo with firstName {} and lastName {}", firstName, lastName);
 
+        if (firstName.trim().length() == 0 || lastName.trim().length() == 0) {
+            throw new BadRequestException("Bad request : missing identity parameters");
+        }
         PersonInfoDTO personInfoDTO = alertsService.getInfoByIdentity(firstName, lastName);
 
         LOGGER.info("GET Request on /personInfo - SUCCESS");
         return new ResponseEntity<>(personInfoDTO, HttpStatus.OK);
-
     }
 
     @GetMapping("/communityEmail")
-    public ResponseEntity<CommunityEmailDTO> getEmailsByCity(@RequestParam("city") String city)
-            throws DataNotFoundException {
+    public ResponseEntity<CommunityEmailDTO> getEmailsByCity(@RequestParam("city") String city) {
+
         LOGGER.debug("GET Request on /communityEmail with city {}", city);
 
+        if (city.trim().length() == 0) {
+            throw new BadRequestException("Bad request : missing city parameter");
+        }
         CommunityEmailDTO communityEmailDTO = alertsService.getEmailsByCity(city);
 
         LOGGER.info("GET Request on /communityEmail - SUCCESS");

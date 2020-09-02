@@ -1,7 +1,7 @@
 package com.safetynet.Alerts.controller;
 
 import com.safetynet.Alerts.dto.MedicalRecordDTO;
-import com.safetynet.Alerts.exception.DataNotFoundException;
+import com.safetynet.Alerts.exception.BadRequestException;
 import com.safetynet.Alerts.model.MedicalRecord;
 import com.safetynet.Alerts.service.MedicalRecordService;
 import org.apache.logging.log4j.LogManager;
@@ -24,10 +24,12 @@ public class MedicalRecordController {
     }
 
     @PostMapping("/medicalRecord")
-    public ResponseEntity<MedicalRecord> createMedicalRecord(@RequestBody MedicalRecordDTO med)
-            throws DataNotFoundException {
+    public ResponseEntity<MedicalRecord> createMedicalRecord(@RequestBody MedicalRecordDTO med) {
         LOGGER.debug("MedicalRecord POST Request on : " + med.getFirstName() + " " + med.getLastName());
 
+        if (med == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         MedicalRecord medicalRecordCreated = medicalRecordService.createMedicalRecord(med);
 
         LOGGER.info("MedicalRecord POST request - SUCCESS");
@@ -38,6 +40,9 @@ public class MedicalRecordController {
     public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecordDTO med) {
         LOGGER.debug("MedicalRecord PUT Request on : " + med.getFirstName() + " " + med.getLastName());
 
+        if (med == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         MedicalRecord medicalRecordUpdated = medicalRecordService.updateMedicalRecord(med);
 
         LOGGER.info("MedicalRecord PUT request - SUCCESS");
@@ -46,9 +51,12 @@ public class MedicalRecordController {
     }
 
     @DeleteMapping("/medicalRecord")
-    public ResponseEntity deletePerson(@RequestBody MedicalRecordDTO med) {
+    public ResponseEntity<Void> deletePerson(@RequestBody MedicalRecordDTO med) {
         LOGGER.debug("MedicalRecord DELETE Request on : " + med.getFirstName() + " " + med.getLastName());
 
+        if (med == null) {
+            throw new BadRequestException("Bad request : missing request body");
+        }
         medicalRecordService.deleteMedicalRecord(med);
 
         LOGGER.info("MedicalRecord DELETE request - SUCCESS");
