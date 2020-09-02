@@ -10,11 +10,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataReader {
+public final class DataReader {
 
     private static final Logger LOGGER = LogManager.getLogger(DataReader.class);
 
@@ -22,7 +23,7 @@ public class DataReader {
     private final static List<FireStation> fireStationList = new ArrayList<>();
     private final static List<MedicalRecord> medicalRecordList = new ArrayList<>();
 
-    public static StoredData readFile(final String dataFilePath) throws Exception {
+    public static StoredData readFile(final String dataFilePath) throws IOException {
 
         LOGGER.debug("Inside DataReader.readFile() method");
 
