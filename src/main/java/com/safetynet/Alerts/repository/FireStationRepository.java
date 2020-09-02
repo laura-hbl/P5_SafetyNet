@@ -19,26 +19,26 @@ public class FireStationRepository {
     @Autowired
     public FireStationRepository(StoredData storedData) {
         LOGGER.debug("Map FireStationList");
-        storedData.getFireStationList().forEach(fireS -> fireStationMap.put(fireS.getStation()
-                + fireS.getAddress(), fireS));
+        storedData.getFireStationList().forEach(fireS -> fireStationMap.put(fireS.getAddress() + fireS.getStation(), fireS));
     }
 
     public FireStation save(FireStation fireS) {
         LOGGER.debug("Inside FireStationRepository.save for fireStation : " +fireS.getAddress(),
                 fireS.getStation());
-        return fireStationMap.put(fireS.getStation() + fireS.getAddress(), fireS);
+        fireStationMap.put(fireS.getAddress() + fireS.getStation(), fireS);
+        return fireS;
     }
 
     public void delete(FireStation fireS) {
         LOGGER.debug("Inside FireStationRepository.delete for fireStation : " +fireS.getAddress(),
                 fireS.getStation());
-        fireStationMap.remove(fireS.getStation() + fireS.getAddress());
+        fireStationMap.remove(fireS.getAddress() + fireS.getStation());
     }
 
     public FireStation find(FireStation fireS) {
         LOGGER.debug("Inside FireStationRepository.find for fireStation : " +fireS.getAddress(),
                 fireS.getStation());
-        return fireStationMap.get(fireS.getStation() + fireS.getAddress());
+        return fireStationMap.get(fireS.getAddress() + fireS.getStation());
     }
 
     public FireStation findByAddress(String address) {
