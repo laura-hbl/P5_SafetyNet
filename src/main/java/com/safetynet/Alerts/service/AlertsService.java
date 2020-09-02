@@ -24,15 +24,16 @@ public class AlertsService implements IAlertsService {
 
     private final MedicalRecordService medicalRecordService;
 
-    private static final AgeCalculator ageCalculator = new AgeCalculator();
+    private final AgeCalculator ageCalculator;
     private static final int adultAge = 19;
 
     @Autowired
     public AlertsService(PersonService personService, FireStationService fireStationService, MedicalRecordService
-            medicalRecordService) {
+            medicalRecordService, AgeCalculator ageCalculator) {
         this.personService = personService;
         this.fireStationService = fireStationService;
         this.medicalRecordService = medicalRecordService;
+        this.ageCalculator = ageCalculator;
     }
 
     public PersonsByStationDTO getPersonsByStation(int station) {
