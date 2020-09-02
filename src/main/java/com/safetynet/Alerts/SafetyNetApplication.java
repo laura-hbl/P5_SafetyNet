@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.io.IOException;
+
 @SpringBootApplication
 public class SafetyNetApplication {
 
@@ -22,7 +24,7 @@ public class SafetyNetApplication {
 	}
 
 	@Bean
-	public StoredData readData() throws Exception {
+	public StoredData readData() throws IOException {
 		LOGGER.debug("Read Data File");
 		return DataReader.readFile(dataFilePath);
 	}
