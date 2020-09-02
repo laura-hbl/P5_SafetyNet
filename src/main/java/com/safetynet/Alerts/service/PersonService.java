@@ -68,7 +68,7 @@ public class PersonService implements IPersonService {
         LOGGER.debug("Inside PersonService.getPersonList");
         List<Person> personList = personRepository.getPersonList();
 
-        if (personList == null) {
+        if (personList.isEmpty()) {
             throw new DataNotFoundException("Failed to get person list");
         }
 
@@ -76,11 +76,12 @@ public class PersonService implements IPersonService {
     }
 
     public List<Person> getPersonsByCity(String city) {
-        LOGGER.debug("Inside PersonService.getPersonsByCity method for city : " +city);
+        LOGGER.debug("Inside PersonService.getPersonsByCity method for city : " + city);
+
         List<Person> personsByCity = personRepository.findByCity(city);
 
         if (personsByCity.isEmpty()) {
-            throw new DataNotFoundException("Failed to get persons for city : " +city);
+            throw new DataNotFoundException("Failed to get persons for city : " + city);
         }
 
         return personsByCity;
@@ -88,6 +89,7 @@ public class PersonService implements IPersonService {
 
     public List<Person> getPersonsByAddress(String address) {
         LOGGER.debug("Inside PersonService.getPersonsByAddress for address : " +address);
+
         List<Person> personsByAddress = personRepository.findByAddress(address);
 
         if (personsByAddress.isEmpty()) {
