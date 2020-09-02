@@ -55,7 +55,7 @@ public class MedicalRecordService implements IMedicalRecordService {
         MedicalRecord medicalRecordToDelete = medicalRecordRepository.findByIdentity(med.getFirstName(),
                 med.getLastName());
 
-        if (medicalRecordToDelete== null) {
+        if (medicalRecordToDelete == null) {
             throw new DataNotFoundException("MedicalRecord not found");
         }
 
