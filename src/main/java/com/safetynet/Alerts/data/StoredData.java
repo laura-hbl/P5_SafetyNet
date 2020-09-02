@@ -19,6 +19,9 @@ public class StoredData {
         this.medicalRecordList = medicalRecordList;
     }
 
+    public StoredData() {
+    }
+
     public List<Person> getPersonList() {
         return personList;
     }
@@ -31,4 +34,15 @@ public class StoredData {
         return medicalRecordList;
     }
 
+    public void setPersonList(List<Person> personList) {
+        this.personList = personList;
+    }
+
+    public void setFireStationList(List<FireStation> fireStationList) {
+        this.fireStationList = fireStationList;
+    }
+
+    public void setMedicalRecordList(List<MedicalRecord> medicalRecordList) {
+        this.medicalRecordList = medicalRecordList;
+    }
 }

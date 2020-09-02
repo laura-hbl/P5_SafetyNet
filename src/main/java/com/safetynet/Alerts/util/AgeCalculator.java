@@ -2,15 +2,17 @@ package com.safetynet.Alerts.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.Period;
 
-public final class AgeCalculator {
+@Component
+public class AgeCalculator {
 
     private static final Logger LOGGER = LogManager.getLogger(AgeCalculator.class);
 
-    public static int getAge(LocalDate birthDate) {
+    public int getAge(LocalDate birthDate) {
 
         LocalDate currentDate = LocalDate.now();
         int age = Period.between(birthDate, currentDate).getYears();
