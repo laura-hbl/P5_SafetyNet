@@ -1,4 +1,4 @@
-package com.safetynet.Alerts.unit;
+package com.safetynet.Alerts.unit.util;
 
 import com.safetynet.Alerts.util.AgeCalculator;
 import org.junit.jupiter.api.DisplayName;
@@ -11,14 +11,15 @@ import static org.assertj.core.api.Assertions.*;
 
 public class AgeCalculatorTest {
 
+    private static final AgeCalculator ageCalculator = new AgeCalculator();
+
     @Test
     @Tag("ValidAge")
     @DisplayName("If birthDate corresponds to a ten years old person, age should be ten")
     public void givenATenYearsOldBirthDate_whenGetAge_thenReturnCorrectAge() {
-
         LocalDate birthDate = LocalDate.now().minusYears(10);
 
-        int age = AgeCalculator.getAge(birthDate);
+        int age = ageCalculator.getAge(birthDate);
 
         assertThat(age).isEqualTo(10);
     }
@@ -27,10 +28,9 @@ public class AgeCalculatorTest {
     @Tag("ValidAge")
     @DisplayName("If birthDate corresponds to a 6 month old baby, age should be one")
     public void givenABabyBirthDate_whenGetAge_thenAgeShouldBeEqualToOne() {
-
         LocalDate birthDate = LocalDate.now().minusMonths(5);
 
-        int age = AgeCalculator.getAge(birthDate);
+        int age = ageCalculator.getAge(birthDate);
 
         assertThat(age).isEqualTo(1);
     }
@@ -42,7 +42,7 @@ public class AgeCalculatorTest {
         int age = 5;
         LocalDate birthDate = LocalDate.now().plusYears(age);
 
-        assertThatIllegalArgumentException().isThrownBy(() -> AgeCalculator.getAge(birthDate));
+        assertThatIllegalArgumentException().isThrownBy(() -> ageCalculator.getAge(birthDate));
     }
 
     @Test
@@ -52,16 +52,16 @@ public class AgeCalculatorTest {
         int age = -5;
         LocalDate birthDate = LocalDate.now().minusYears(age);
 
-        assertThatIllegalArgumentException().isThrownBy(() -> AgeCalculator.getAge(birthDate));
+        assertThatIllegalArgumentException().isThrownBy(() -> ageCalculator.getAge(birthDate));
     }
 
     @Test
     @Tag("Exception")
     @DisplayName("For a null birthDate, getAge should raise an NullPointerException")
     public void givenANullBirthDate_whenGetAge_thenNullPointerExceptionIsThrown() {
-
         LocalDate birthDate = null;
 
-        assertThatNullPointerException().isThrownBy(() -> AgeCalculator.getAge(birthDate));
+        assertThatNullPointerException().isThrownBy(() -> ageCalculator.getAge(birthDate));
     }
 }
+
