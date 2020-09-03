@@ -10,6 +10,9 @@ public class FireStationDTO {
         this.station = station;
     }
 
+    public FireStationDTO() {
+    }
+
     public String getAddress() {
         return address;
     }

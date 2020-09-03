@@ -10,6 +10,9 @@ public class PhoneAlertDTO {
         this.phones = phones;
     }
 
+    public PhoneAlertDTO() {
+    }
+
     public List<String> getPhones() {
         return phones;
     }

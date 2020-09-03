@@ -10,6 +10,9 @@ public class CommunityEmailDTO {
         this.emails = emails;
     }
 
+    public CommunityEmailDTO() {
+    }
+
     public List<String> getEmails() {
         return emails;
     }

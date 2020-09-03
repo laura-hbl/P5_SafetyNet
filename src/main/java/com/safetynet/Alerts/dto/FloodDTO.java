@@ -10,6 +10,9 @@ public class FloodDTO {
         this.householdsByStation = householdsByStation;
     }
 
+    public FloodDTO() {
+    }
+
     public List<HouseholdsByStationDTO> getHouseholdsByStation() {
         return householdsByStation;
     }

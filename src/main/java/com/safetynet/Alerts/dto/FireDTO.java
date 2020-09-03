@@ -14,6 +14,9 @@ public class FireDTO {
         this.persons = persons;
     }
 
+    public FireDTO() {
+    }
+
     public int getStation() {
         return station;
     }

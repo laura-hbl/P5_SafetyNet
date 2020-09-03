@@ -12,6 +12,9 @@ public class PersonInfoDTO {
         this.personsInfo = personsInfo;
     }
 
+    public PersonInfoDTO() {
+    }
+
     public List<PersonInfo> getPersonsInfo() {
         return personsInfo;
     }

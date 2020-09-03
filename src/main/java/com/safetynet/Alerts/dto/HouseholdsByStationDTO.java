@@ -14,6 +14,9 @@ public class HouseholdsByStationDTO {
         this.households = households;
     }
 
+    public HouseholdsByStationDTO() {
+    }
+
     public int getStation() {
         return station;
     }

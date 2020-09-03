@@ -14,6 +14,9 @@ public class ChildAlertDTO {
         this.homeMembers = homeMembers;
     }
 
+    public ChildAlertDTO() {
+    }
+
     public List<Child> getChild() {
         return child;
     }

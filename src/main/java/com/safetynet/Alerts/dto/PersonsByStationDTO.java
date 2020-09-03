@@ -16,6 +16,9 @@ public class PersonsByStationDTO {
         this.childNumber = childNumber;
     }
 
+    public PersonsByStationDTO() {
+    }
+
     public List<PersonStation> getPersonsByStation() {
         return personsByStation;
     }

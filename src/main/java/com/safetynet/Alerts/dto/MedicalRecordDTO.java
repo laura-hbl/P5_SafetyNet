@@ -19,6 +19,9 @@ public class MedicalRecordDTO {
         this.allergies = allergies;
     }
 
+    public MedicalRecordDTO() {
+    }
+
     public String getFirstName() {
         return firstName;
     }

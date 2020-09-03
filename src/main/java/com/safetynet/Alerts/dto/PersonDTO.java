@@ -20,6 +20,9 @@ public class PersonDTO {
         this.email = email;
     }
 
+    public PersonDTO() {
+    }
+
     public String getFirstName() {
         return firstName;
     }
