@@ -18,13 +18,14 @@ public class AlertsService implements IAlertsService {
 
     private static final Logger LOGGER = LogManager.getLogger(AlertsService.class);
 
-    private final PersonService personService;
+    private final IPersonService personService;
 
-    private final FireStationService fireStationService;
+    private final IFireStationService fireStationService;
 
-    private final MedicalRecordService medicalRecordService;
+    private final IMedicalRecordService medicalRecordService;
 
     private final AgeCalculator ageCalculator;
+
     private static final int adultAge = 19;
 
     @Autowired
@@ -48,7 +49,7 @@ public class AlertsService implements IAlertsService {
         for (Person pers : persons) {
             for (String address : addresses) {
                 if (pers.getAddress().equals(address)) {
-                    MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                    MedicalRecordDTO med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
                             pers.getLastName());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
                     LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
@@ -75,7 +76,7 @@ public class AlertsService implements IAlertsService {
         for (Person pers : persons) {
 
             if (pers.getLastName().equals(lastName)) {
-                MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                MedicalRecordDTO med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
                         pers.getLastName());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
                 LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
@@ -125,7 +126,7 @@ public class AlertsService implements IAlertsService {
         List<String> adultList = new ArrayList<>();
 
         for (Person pers : personsByAddress) {
-            MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+            MedicalRecordDTO med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
                     pers.getLastName());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
             LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
@@ -147,7 +148,7 @@ public class AlertsService implements IAlertsService {
         List<PersonAddress> persons = new ArrayList<>();
 
         for (Person pers : personsByAddress) {
-            MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+            MedicalRecordDTO med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
                     pers.getLastName());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
             LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
@@ -178,7 +179,7 @@ public class AlertsService implements IAlertsService {
                     List<PersonAddress> personAddresses = new ArrayList<>();
 
                     for (Person pers : persons) {
-                        MedicalRecord med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
+                        MedicalRecordDTO med = medicalRecordService.getMedicalRecordById(pers.getFirstName(),
                                 pers.getLastName());
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/d/yyyy");
                         LocalDate birthDate = LocalDate.parse(med.getBirthDate(), formatter);
