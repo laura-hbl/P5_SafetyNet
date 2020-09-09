@@ -7,13 +7,15 @@ import java.util.List;
 
 public interface IFireStationService {
 
-    FireStation createFireStation(FireStationDTO fireStation);
+    FireStationDTO createFireStation(FireStationDTO fireStation);
 
-    FireStation updateFireStation(FireStationDTO fireStation);
+    FireStationDTO updateFireStation(FireStationDTO fireStation);
 
-    void deleteFireStation(FireStationDTO fireStation);
+    void deleteFireStation(String address, Integer station);
 
     FireStation getFireStationByAddress(String address);
+
+    FireStationDTO getFireStationByKeyId(String address, Integer station);
 
     List<String> getAddressesByStation(int station);
 }

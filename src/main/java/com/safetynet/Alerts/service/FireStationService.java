@@ -5,6 +5,8 @@ import com.safetynet.Alerts.exception.DataAlreadyRegisteredException;
 import com.safetynet.Alerts.exception.DataNotFoundException;
 import com.safetynet.Alerts.model.FireStation;
 import com.safetynet.Alerts.repository.FireStationRepository;
+import com.safetynet.Alerts.util.DTOConverter;
+import com.safetynet.Alerts.util.ModelConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,45 +22,64 @@ public class FireStationService implements IFireStationService {
 
     private final FireStationRepository fireStationRepository;
 
+    private final ModelConverter modelConverter;
+
+    private final DTOConverter dtoConverter;
+
+
     @Autowired
-    public FireStationService(FireStationRepository fireStationRepository) {
+    public FireStationService(FireStationRepository fireStationRepository, ModelConverter modelConverter, DTOConverter dtoConverter) {
+        this.modelConverter = modelConverter;
+        this.dtoConverter = dtoConverter;
         this.fireStationRepository = fireStationRepository;
     }
 
-    public FireStation createFireStation(FireStationDTO fireS) {
+    public FireStationDTO createFireStation(FireStationDTO fireS) {
         LOGGER.debug("Inside FireStationService.createFireStation");
-        FireStation fireStationCreated = new FireStation(fireS.getAddress(), fireS.getStation());
-        FireStation fireStation = fireStationRepository.find(fireStationCreated);
+        FireStation fireFound = fireStationRepository.find(fireS.getAddress(), fireS.getStation());
 
-        if (fireStation != null) {
+        if (fireFound != null) {
             throw new DataAlreadyRegisteredException("FireStation already registered");
         }
+        FireStation fireToSave = modelConverter.toFireStation(fireS);
+        FireStation fireSaved = fireStationRepository.save(fireToSave);
 
-        return fireStationRepository.save(fireStationCreated);
+        return dtoConverter.toFireStationDTO(fireSaved);
     }
 
-    public FireStation updateFireStation(FireStationDTO fireS) {
+    public FireStationDTO updateFireStation(FireStationDTO fireS) {
         LOGGER.debug("Inside FireStationService.updateFireStation");
-        FireStation fireStationToUpdate = fireStationRepository.findByAddress(fireS.getAddress());
+        FireStation fireToUpdate = fireStationRepository.findByAddress(fireS.getAddress());
 
-        if (fireStationToUpdate == null) {
+        if (fireToUpdate == null) {
             throw new DataNotFoundException("FireStation not found");
         }
 
-        fireStationToUpdate.setStation(fireS.getStation());
-        return fireStationToUpdate;
+        fireToUpdate.setStation(fireS.getStation());
+
+        return dtoConverter.toFireStationDTO(fireToUpdate);
     }
 
-    public void deleteFireStation(FireStationDTO fireS) {
+    public void deleteFireStation(String address, Integer station) {
         LOGGER.debug("Inside FireStationService.deleteFireStation");
-        FireStation fireStation = new FireStation(fireS.getAddress(), fireS.getStation());
-        FireStation fireStationToDelete = fireStationRepository.find(fireStation);
+        FireStation fireStationToDelete = fireStationRepository.find(address, station);
 
         if (fireStationToDelete == null) {
             throw new DataNotFoundException("FireStation not found");
         }
 
         fireStationRepository.delete(fireStationToDelete);
+    }
+
+    public FireStationDTO getFireStationByKeyId(String address, Integer station) {
+        LOGGER.debug("Inside FireStationService.getFireStation for fireStation: " +address, station);
+        FireStation fireStation = fireStationRepository.find(address, station);
+
+        if (fireStation == null) {
+            throw new DataNotFoundException("Failed to get the fireStations mapped to address : " +address);
+        }
+
+        return dtoConverter.toFireStationDTO(fireStation);
     }
 
     public FireStation getFireStationByAddress(String address) {
