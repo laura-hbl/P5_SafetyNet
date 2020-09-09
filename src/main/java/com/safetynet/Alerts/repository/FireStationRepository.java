@@ -19,7 +19,8 @@ public class FireStationRepository {
     @Autowired
     public FireStationRepository(StoredData storedData) {
         LOGGER.debug("Map FireStationList");
-        storedData.getFireStationList().forEach(fireS -> fireStationMap.put(fireS.getAddress() + fireS.getStation(), fireS));
+        storedData.getFireStationList().forEach(fireS -> fireStationMap.put(fireS.getAddress() + fireS.getStation(),
+                fireS));
     }
 
     public FireStation save(FireStation fireS) {
@@ -35,10 +36,10 @@ public class FireStationRepository {
         fireStationMap.remove(fireS.getAddress() + fireS.getStation());
     }
 
-    public FireStation find(FireStation fireS) {
-        LOGGER.debug("Inside FireStationRepository.find for fireStation : " +fireS.getAddress(),
-                fireS.getStation());
-        return fireStationMap.get(fireS.getAddress() + fireS.getStation());
+    public FireStation find(String address, Integer station) {
+        LOGGER.debug("Inside FireStationRepository.find for fireStation : " +address,
+                station);
+        return fireStationMap.get(address + station);
     }
 
     public FireStation findByAddress(String address) {
