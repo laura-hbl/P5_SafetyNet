@@ -1,13 +1,14 @@
 package com.safetynet.Alerts.service;
 
 import com.safetynet.Alerts.dto.MedicalRecordDTO;
-import com.safetynet.Alerts.model.MedicalRecord;
 
 public interface IMedicalRecordService {
 
-    MedicalRecord createMedicalRecord(MedicalRecordDTO medicalRecord);
+    MedicalRecordDTO createMedicalRecord(MedicalRecordDTO medicalRecord);
 
-    MedicalRecord updateMedicalRecord(MedicalRecordDTO medicalRecord);
+    MedicalRecordDTO updateMedicalRecord(MedicalRecordDTO medicalRecord);
 
-    MedicalRecord getMedicalRecordById(String firstName, String lastName);
+    void deleteMedicalRecord(String firstName, String lastName);
+
+    MedicalRecordDTO getMedicalRecordById(String firstName, String lastName);
 }

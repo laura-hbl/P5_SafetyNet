@@ -5,6 +5,8 @@ import com.safetynet.Alerts.exception.DataAlreadyRegisteredException;
 import com.safetynet.Alerts.exception.DataNotFoundException;
 import com.safetynet.Alerts.model.MedicalRecord;
 import com.safetynet.Alerts.repository.MedicalRecordRepository;
+import com.safetynet.Alerts.util.DTOConverter;
+import com.safetynet.Alerts.util.ModelConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,43 +19,50 @@ public class MedicalRecordService implements IMedicalRecordService {
 
     private final MedicalRecordRepository medicalRecordRepository;
 
+    private final ModelConverter modelConverter;
+
+    private final DTOConverter dtoConverter;
+
     @Autowired
-    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
+    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository, ModelConverter modelConverter, DTOConverter dtoConverter) {
+        this.modelConverter = modelConverter;
+        this.dtoConverter = dtoConverter;
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
-    public MedicalRecord createMedicalRecord(MedicalRecordDTO med) {
+    public MedicalRecordDTO createMedicalRecord(MedicalRecordDTO med) {
         LOGGER.debug("Inside MedicalRecordService.createMedicalRecord for: " +med.getFirstName(), med.getLastName());
-        MedicalRecord medicalRecordToSave = new MedicalRecord(med.getFirstName(), med.getLastName(),
-                med.getBirthDate(), med.getMedications(), med.getAllergies());
-        MedicalRecord medicalRecord = medicalRecordRepository.findByIdentity(med.getFirstName(),
+
+        MedicalRecord medFound = medicalRecordRepository.findByIdentity(med.getFirstName(),
                 med.getLastName());
 
-        if (medicalRecord != null) {
+        if (medFound != null) {
             throw new DataAlreadyRegisteredException("MedicalRecord already registered");
         }
+        MedicalRecord medToSave = modelConverter.toMedicalRecord(med);
+        MedicalRecord medSaved = medicalRecordRepository.save(medToSave);
 
-        return medicalRecordRepository.save(medicalRecordToSave);
+        return dtoConverter.toMedicalRecordDTO(medSaved);
     }
 
-    public MedicalRecord updateMedicalRecord(MedicalRecordDTO med) {
+    public MedicalRecordDTO updateMedicalRecord(MedicalRecordDTO med) {
         LOGGER.debug("Inside MedicalRecordService.updateMedicalRecord for: " +med.getFirstName(), med.getLastName());
-        MedicalRecord medicalRecordToUpdate = medicalRecordRepository.findByIdentity(med.getFirstName(),
+        MedicalRecord medFound = medicalRecordRepository.findByIdentity(med.getFirstName(),
                 med.getLastName());
 
-        if (medicalRecordToUpdate == null) {
+        if (medFound == null) {
             throw new DataNotFoundException("MedicalRecord not found");
         }
-        medicalRecordToUpdate.setBirthDate(med.getBirthDate());
-        medicalRecordToUpdate.setMedications(med.getMedications());
-        medicalRecordToUpdate.setAllergies(med.getAllergies());
-        return medicalRecordToUpdate;
+        medFound.setBirthDate(med.getBirthDate());
+        medFound.setMedications(med.getMedications());
+        medFound.setAllergies(med.getAllergies());
+
+        return dtoConverter.toMedicalRecordDTO(medFound);
     }
 
-    public void deleteMedicalRecord(MedicalRecordDTO med) {
-        LOGGER.debug("Inside MedicalRecordService.deleteMedicalRecord for: "+med.getFirstName(), med.getLastName());
-        MedicalRecord medicalRecordToDelete = medicalRecordRepository.findByIdentity(med.getFirstName(),
-                med.getLastName());
+    public void deleteMedicalRecord(String firstName, String lastName) {
+        LOGGER.debug("Inside MedicalRecordService.deleteMedicalRecord for {} {}", firstName, lastName);
+        MedicalRecord medicalRecordToDelete = medicalRecordRepository.findByIdentity(firstName, lastName);
 
         if (medicalRecordToDelete == null) {
             throw new DataNotFoundException("MedicalRecord not found");
@@ -62,7 +71,7 @@ public class MedicalRecordService implements IMedicalRecordService {
         medicalRecordRepository.delete(medicalRecordToDelete);
     }
 
-    public MedicalRecord getMedicalRecordById(String firstName, String lastName) {
+    public MedicalRecordDTO getMedicalRecordById(String firstName, String lastName) {
         LOGGER.debug("Inside MedicalRecordService.getMedicalRecordByID for {} {}",
                 firstName, lastName);
         MedicalRecord medicalRecord = medicalRecordRepository.findByIdentity(firstName, lastName);
@@ -71,6 +80,6 @@ public class MedicalRecordService implements IMedicalRecordService {
             throw new DataNotFoundException("Failed to get medicalRecord for : "+firstName +" "+lastName);
         }
 
-        return medicalRecord;
+        return dtoConverter.toMedicalRecordDTO(medicalRecord);
     }
 }
