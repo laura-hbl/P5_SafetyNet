@@ -3,6 +3,7 @@ package com.safetynet.Alerts.controller;
 import com.safetynet.Alerts.dto.*;
 import com.safetynet.Alerts.exception.BadRequestException;
 import com.safetynet.Alerts.service.AlertsService;
+import com.safetynet.Alerts.service.IAlertsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,14 @@ public class AlertsController {
 
     private static final Logger LOGGER = LogManager.getLogger(AlertsController.class);
 
-    AlertsService alertsService;
+    IAlertsService alertsService;
 
     @Autowired
     public AlertsController(AlertsService alertsService) {
         this.alertsService = alertsService;
     }
+
+
 
     @GetMapping("/firestation")
     public ResponseEntity<PersonsByStationDTO> getPersonsByStation(@RequestParam("stationNumber") Integer station) {
