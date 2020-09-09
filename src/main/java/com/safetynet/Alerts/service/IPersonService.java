@@ -7,16 +7,17 @@ import java.util.List;
 
 public interface IPersonService {
 
-    Person createPerson(PersonDTO person);
+    PersonDTO createPerson(PersonDTO person);
 
-    Person updatePerson(PersonDTO person);
+    PersonDTO updatePerson(PersonDTO person);
 
-    void deletePerson(PersonDTO person);
+    void deletePerson(String firstName, String lastName);
+
+    PersonDTO getPersonById(String firstName, String lastName);
 
     List<Person> getPersonList();
 
     List<Person> getPersonsByCity(String city);
 
     List<Person> getPersonsByAddress(String address);
-
 }
