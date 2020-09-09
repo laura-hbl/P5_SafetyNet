@@ -2,7 +2,7 @@ package com.safetynet.Alerts.controller;
 
 import com.safetynet.Alerts.dto.MedicalRecordDTO;
 import com.safetynet.Alerts.exception.BadRequestException;
-import com.safetynet.Alerts.model.MedicalRecord;
+import com.safetynet.Alerts.service.IMedicalRecordService;
 import com.safetynet.Alerts.service.MedicalRecordService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +16,7 @@ public class MedicalRecordController {
 
     private static final Logger LOGGER = LogManager.getLogger(MedicalRecordController.class);
 
-    MedicalRecordService medicalRecordService;
+    IMedicalRecordService medicalRecordService;
 
     @Autowired
     public MedicalRecordController(MedicalRecordService medicalRecordService) {
@@ -24,26 +24,28 @@ public class MedicalRecordController {
     }
 
     @PostMapping("/medicalRecord")
-    public ResponseEntity<MedicalRecord> createMedicalRecord(@RequestBody MedicalRecordDTO med) {
+    public ResponseEntity<MedicalRecordDTO> createMedicalRecord(@RequestBody MedicalRecordDTO med) {
         LOGGER.debug("MedicalRecord POST Request on : " + med.getFirstName() + " " + med.getLastName());
 
-        if (med == null) {
-            throw new BadRequestException("Bad request : missing request body");
+        if (med.getFirstName() == null || med.getFirstName().isEmpty() || med.getLastName() == null ||
+                med.getLastName().isEmpty()) {
+            throw new BadRequestException("Bad request : missing or incomplete body request");
         }
-        MedicalRecord medicalRecordCreated = medicalRecordService.createMedicalRecord(med);
+        MedicalRecordDTO medicalRecordCreated = medicalRecordService.createMedicalRecord(med);
 
         LOGGER.info("MedicalRecord POST request - SUCCESS");
         return new ResponseEntity<>(medicalRecordCreated, HttpStatus.CREATED);
     }
 
     @PutMapping("/medicalRecord")
-    public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecordDTO med) {
+    public ResponseEntity<MedicalRecordDTO> updateMedicalRecord(@RequestBody MedicalRecordDTO med) {
         LOGGER.debug("MedicalRecord PUT Request on : " + med.getFirstName() + " " + med.getLastName());
 
-        if (med == null) {
-            throw new BadRequestException("Bad request : missing request body");
+        if (med.getFirstName() == null || med.getFirstName().isEmpty() || med.getLastName() == null ||
+                med.getLastName().isEmpty()) {
+            throw new BadRequestException("Bad request : missing or incomplete body request");
         }
-        MedicalRecord medicalRecordUpdated = medicalRecordService.updateMedicalRecord(med);
+        MedicalRecordDTO medicalRecordUpdated = medicalRecordService.updateMedicalRecord(med);
 
         LOGGER.info("MedicalRecord PUT request - SUCCESS");
         return new ResponseEntity<>(medicalRecordUpdated, HttpStatus.OK);
@@ -51,15 +53,32 @@ public class MedicalRecordController {
     }
 
     @DeleteMapping("/medicalRecord")
-    public ResponseEntity<Void> deletePerson(@RequestBody MedicalRecordDTO med) {
-        LOGGER.debug("MedicalRecord DELETE Request on : " + med.getFirstName() + " " + med.getLastName());
+    public ResponseEntity<Void> deleteMedicalRecord(@RequestParam("firstName") String firstName,
+                                                    @RequestParam("lastName") String lastName) {
+        LOGGER.debug("MedicalRecord DELETE Request on : " + firstName + " " + lastName);
 
-        if (med == null) {
-            throw new BadRequestException("Bad request : missing request body");
+        if (firstName == null || firstName.trim().length() == 0 || lastName == null
+                || lastName.trim().length() == 0) {
+            throw new BadRequestException("Bad request : missing or incomplete parameter");
         }
-        medicalRecordService.deleteMedicalRecord(med);
+        medicalRecordService.deleteMedicalRecord(firstName, lastName);
 
         LOGGER.info("MedicalRecord DELETE request - SUCCESS");
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/medicalRecord")
+    public ResponseEntity<MedicalRecordDTO> getMedicalRecord(@RequestParam("firstName") String firstName,
+                                                             @RequestParam("lastName") String lastName) {
+        LOGGER.debug("MedicalRecord GET Request on : {} {}", firstName, lastName);
+
+        if (firstName == null || firstName.trim().length() == 0 || lastName == null
+                || lastName.trim().length() == 0) {
+            throw new BadRequestException("Bad request : missing or incomplete parameter");
+        }
+        MedicalRecordDTO medDTO = medicalRecordService.getMedicalRecordById(firstName, lastName);
+
+        LOGGER.info("MedicalRecord GET Request - SUCCESS");
+        return new ResponseEntity<>(medDTO, HttpStatus.OK);
     }
 }
