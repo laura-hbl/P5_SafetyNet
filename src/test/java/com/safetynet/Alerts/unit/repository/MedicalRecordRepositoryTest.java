@@ -44,13 +44,6 @@ public class MedicalRecordRepositoryTest {
         assertThat(medSaved).isEqualTo(med3);
     }
 
-    /*@Test
-    @Tag("Save")
-    @DisplayName("Given a null MedicalRecord, when save, then throw NullPointerException")
-    public void givenANullMedicalRecord_whenSave_thenNullPointerExceptionIsThrown() {
-        assertThatNullPointerException().isThrownBy(() -> medicalRecordRepository.save(null));
-    }*/
-
     @Test
     @Tag("Delete")
     @DisplayName("Given a MedicalRecord, when delete, then MedicalRecord should be deleted successfully")
@@ -59,13 +52,6 @@ public class MedicalRecordRepositoryTest {
 
         assertThat(medicalRecordRepository.findByIdentity("John", "Boyd")).isEqualTo(null);
     }
-
-    /*@Test
-    @Tag("Delete")
-    @DisplayName("Given a null MedicalRecord, when delete, then throw NullPointerException")
-    public void givenANullMedicalRecord_whenDelete_thenNullPointerExceptionIsThrown() {
-        assertThatNullPointerException().isThrownBy(() -> medicalRecordRepository.delete(null));
-    }*/
 
     @Test
     @Tag("FindByIdentity")
@@ -84,32 +70,4 @@ public class MedicalRecordRepositoryTest {
 
         assertThat(medFound).isEqualTo(null);
     }
-
-    /*@Test
-    public void givenAnEmptyFirstName_whenFindByIdentity_thenReturnNull() {
-        MedicalRecord medFound = medicalRecordRepository.findByIdentity("", "Boyd");
-
-        assertThat(medFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenAnEmptyLastName_whenFindByIdentity_thenReturnNull() {
-        MedicalRecord medFound = medicalRecordRepository.findByIdentity("John", "");
-
-        assertThat(medFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenANullFirstName_whenFindByIdentity_thenReturnNull() {
-        MedicalRecord medFound = medicalRecordRepository.findByIdentity(null, "Boyd");
-
-        assertThat(medFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenANullLastName_whenFindByIdentity_thenReturnNull() {
-        MedicalRecord medFound = medicalRecordRepository.findByIdentity("John", null);
-
-        assertThat(medFound).isEqualTo(null);
-    }*/
 }

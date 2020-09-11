@@ -16,18 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FireStationRepositoryTest {
 
-   private FireStationRepository fireStationRepository;
+    private FireStationRepository fireStationRepository;
 
-   private static FireStation fireStation1;
-   private static FireStation fireStation2;
+    private static FireStation fire1;
+    private static FireStation fire2;
 
-   @Before
+    @Before
     public void setUp() {
-        fireStation1 = new FireStation("29 15th St", 2);
-        fireStation2 = new FireStation("644 Gershwin Cir", 1);
+        fire1 = new FireStation("29 15th St", 2);
+        fire2 = new FireStation("644 Gershwin Cir", 1);
 
         StoredData storedData = new StoredData();
-        storedData.setFireStationList(Arrays.asList(fireStation1, fireStation2));
+        storedData.setFireStationList(Arrays.asList(fire1, fire2));
 
         fireStationRepository = new FireStationRepository(storedData);
     }
@@ -43,97 +43,35 @@ public class FireStationRepositoryTest {
         assertThat(fireStationSaved).isEqualTo(fireStationToSave);
     }
 
-    /*@Test
-    @Tag("Save")
-    @DisplayName("Given a null FireStation, when save, then throw NullPointerException")
-    public void givenANullFireStation_whenSave_thenNullPointerExceptionIsThrown() {
-        FireStation fireStation = null;
-
-        assertThatNullPointerException().isThrownBy(() -> fireStationRepository.save(fireStation));
-    }
-*/
     @Test
     @Tag("Delete")
     @DisplayName("Given a FireStation, when delete, then FireStation should be deleted successfully")
     public void givenAFireStation_whenDelete_thenFireStationShouldBeDeleteCorrectly() {
-        fireStationRepository.delete(fireStation2);
+        fireStationRepository.delete(fire2);
 
-        assertThat(fireStationRepository.find(fireStation2)).isEqualTo(null);
+        assertThat(fireStationRepository.find(fire2.getAddress(), fire2.getStation())).isEqualTo(null);
     }
-
-    /*@Test
-    @Tag("Delete")
-    @DisplayName("Given a null FireStation, when save, then throw NullPointerException")
-    public void givenANullFireStation_whenDelete_thenNullPointerExceptionIsThrown() {
-        FireStation fireStation = null;
-
-        assertThatNullPointerException().isThrownBy(() -> fireStationRepository.delete(fireStation));
-    }*/
 
     @Test
     @Tag("Find")
     @DisplayName("Given an expected FireStation, when find, then fireStation found should match expected FireStation")
     public void givenAFireStationToFind_whenFind_thenReturnExpectedFireStationFound() {
-        FireStation fireStationFound = fireStationRepository.find(fireStation2);
+        FireStation fireStationFound = fireStationRepository.find(fire2.getAddress(), fire2.getStation());
 
-        assertThat(fireStationFound).isEqualTo(fireStation2);
+        assertThat(fireStationFound).isEqualTo(fire2);
     }
-
-    /*@Test
-    @Tag("Find")
-    @DisplayName("Given a null FireStation, when find, then throw NullPointerException")
-    public void givenANullFireStation_whenFind_thenNullPointerExceptionIsThrown() {
-        FireStation fireStation = null;
-
-        assertThatNullPointerException().isThrownBy(() -> fireStationRepository.find(fireStation));
-    }*/
 
     @Test
     @Tag("Find")
     @DisplayName("Given an unregistered FireStation, when find, then return null")
-    public void givenAUnRegisteredFireStationToFind_whenFind_thenReturnNull() {
-        FireStation UnRegisteredFireStation = new FireStation("489 Manchester St", 1);
+    public void givenAUnRegisteredFireStation_whenFind_thenReturnNull() {
+        FireStation unRegisteredFireStation = new FireStation("489 Manchester St", 1);
 
-        FireStation fireStationFound = fireStationRepository.find(UnRegisteredFireStation);
-
-        assertThat(fireStationFound).isEqualTo(null);
-    }
-
-    /*@Test
-    public void givenAFireStationWithEmptyAddress_whenFind_thenReturnNull() {
-        FireStation invalidFireStation = new FireStation("", 1);
-
-        FireStation fireStationFound = fireStationRepository.find(invalidFireStation);
+        FireStation fireStationFound = fireStationRepository.find(unRegisteredFireStation.getAddress(),
+                unRegisteredFireStation.getStation());
 
         assertThat(fireStationFound).isEqualTo(null);
     }
-
-    @Test
-    public void givenAFireStationWithNullAddress_whenFind_thenReturnNull() {
-        FireStation invalidFireStation = new FireStation(null, 1);
-
-        FireStation fireStationFound = fireStationRepository.find(invalidFireStation);
-
-        assertThat(fireStationFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenAFireStationWithInvalidStationNumber_whenFind_thenReturnNull() {
-        FireStation invalidFireStation = new FireStation("29 15th St", 6);
-
-        FireStation fireStationFound = fireStationRepository.find(invalidFireStation);
-
-        assertThat(fireStationFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenAFireStationWithNegativeStationNumber_whenFind_thenReturnNull() {
-        FireStation invalidFireStation = new FireStation("29 15th St", -3);
-
-        FireStation fireStationFound = fireStationRepository.find(invalidFireStation);
-
-        assertThat(fireStationFound).isEqualTo(null);
-    }*/
 
     @Test
     @Tag("FindByAddress")
@@ -143,7 +81,7 @@ public class FireStationRepositoryTest {
 
         FireStation fireFoundByAddress = fireStationRepository.findByAddress(address);
 
-        assertThat(fireFoundByAddress).isEqualTo(fireStation1);
+        assertThat(fireFoundByAddress).isEqualTo(fire1);
     }
 
     @Test
@@ -157,25 +95,6 @@ public class FireStationRepositoryTest {
         assertThat(fireSFoundByAddress).isEqualTo(null);
     }
 
-    /*@Test
-    public void givenANullAddress_whenFindByAddress_thenReturnNull() {
-        String address = null;
-
-        FireStation fireStationFoundByAddress = fireStationRepository.findByAddress(address);
-
-        assertThat(fireStationFoundByAddress).isEqualTo(null);
-    }
-
-    @Test
-    public void givenAnEmptyAddress_whenFindByAddress_thenReturnNull() {
-        String address = "";
-
-        FireStation fireStationFoundByAddress = fireStationRepository.findByAddress(address);
-
-        assertThat(fireStationFoundByAddress).isEqualTo(null);
-    }*/
-
-
     @Test
     @Tag("FindByStation")
     @DisplayName("Given a station number, when findByStation, then return FireStation associated with that station number")
@@ -183,7 +102,7 @@ public class FireStationRepositoryTest {
         List<FireStation> fireSFoundByStation = fireStationRepository.findByStation(1);
 
         assertThat(fireSFoundByStation).isNotEmpty();
-        assertThat(fireSFoundByStation.contains(fireStation2));
+        assertThat(fireSFoundByStation.contains(fire2));
     }
 
     @Test

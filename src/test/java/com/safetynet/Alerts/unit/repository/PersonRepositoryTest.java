@@ -54,13 +54,6 @@ public class PersonRepositoryTest {
         assertThat(personSaved).isEqualTo(person3);
     }
 
-    /*@Test
-    @Tag("Save")
-    @DisplayName("Given a null Person, when save, then throw NullPointerException")
-    public void givenANullPerson_whenSave_thenNullPointerExceptionIsThrown() {
-        assertThatNullPointerException().isThrownBy(() -> personRepository.save(null));
-    }*/
-
     @Test
     @Tag("Delete")
     @DisplayName("Given a Person, when delete, then Person should be deleted successfully")
@@ -69,13 +62,6 @@ public class PersonRepositoryTest {
 
         assertThat(personRepository.findByIdentity("John", "Boyd")).isEqualTo(null);
     }
-
-    /*@Test
-    @Tag("Delete")
-    @DisplayName("Given a null Person, when delete, then throw NullPointerException")
-    public void givenANullPerson_whenDelete_thenNullPointerExceptionIsThrown() {
-        assertThatNullPointerException().isThrownBy(() -> personRepository.delete(null));
-    }*/
 
     @Test
     @Tag("FindByIdentity")
@@ -95,34 +81,6 @@ public class PersonRepositoryTest {
         assertThat(personFound).isEqualTo(null);
     }
 
-    /*@Test
-    public void givenAnEmptyFirstName_whenFindByIdentity_thenReturnNull() {
-        Person personFound = personRepository.findByIdentity("", "Boyd");
-
-        assertThat(personFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenAnEmptyLastName_whenFindByIdentity_thenReturnNull() {
-        Person personFound = personRepository.findByIdentity("John", "");
-
-        assertThat(personFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenANullFirstName_whenFindByIdentity_thenReturnNull() {
-        Person personFound = personRepository.findByIdentity(null, "Boyd");
-
-        assertThat(personFound).isEqualTo(null);
-    }
-
-    @Test
-    public void givenANullLastName_whenFindByIdentity_thenReturnNull() {
-        Person personFound = personRepository.findByIdentity("John", null);
-
-        assertThat(personFound).isEqualTo(null);
-    }
-*/
     @Test
     @Tag("FindByAddress")
     @DisplayName("Given an address, when findByAddress, then return persons at this address")
@@ -141,20 +99,6 @@ public class PersonRepositoryTest {
         assertThat(personsByAddress).isEmpty();
     }
 
-/*    @Test
-    public void givenANullAddress_whenFindByAddress_thenReturnEmptyPersonList() {
-        List<Person> personsByAddress = personRepository.findByAddress(null);
-
-        assertThat(personsByAddress).isEmpty();
-    }
-
-    @Test
-    public void givenAnEmptyAddress_whenFindByAddress_thenReturnEmptyPersonList() {
-        List<Person> personsByAddress = personRepository.findByAddress("");
-
-        assertThat(personsByAddress).isEmpty();
-    }*/
-
     @Test
     @Tag("FindByCity")
     @DisplayName("Given a city, when findByCity, then return Persons living at this city")
@@ -172,19 +116,4 @@ public class PersonRepositoryTest {
 
         assertThat(personsByCity).isEmpty();
     }
-
-/*    @Test
-    public void givenANullCity_whenFindByCity_thenReturnEmptyPersonList() {
-        List<Person> personsByCity = personRepository.findByCity(null);
-
-        assertThat(personsByCity).isEmpty();
-    }
-
-    @Test
-    public void givenAnEmptyCity_whenFindByCity_thenReturnEmptyPersonList() {
-        List<Person> personsByCity = personRepository.findByCity("");
-
-        assertThat(personsByCity).isEmpty();
-    }*/
-
 }
