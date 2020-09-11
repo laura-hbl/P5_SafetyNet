@@ -3,7 +3,6 @@ package com.safetynet.Alerts.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.Alerts.controller.MedicalRecordController;
 import com.safetynet.Alerts.dto.MedicalRecordDTO;
-import com.safetynet.Alerts.model.MedicalRecord;
 import com.safetynet.Alerts.service.MedicalRecordService;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,20 +43,17 @@ public class MedicalRecordControllerTest {
 
         medDTO = new MedicalRecordDTO("John", "Boyd", "03/06/1984",
                 Arrays.asList("aznol:350mg"), Arrays.asList("nillacilan", "peanut"));
-
     }
 
     @Test
     @Tag("POST-MedicalRecord")
-    @DisplayName("Given a MedicalRecord to add, when createMedicalRecord, then return Created status")
-    public void givenAMedicalRecordToAdd_whenCreateMedicalRecord_thenReturnCreatedStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(medDTO);
+    @DisplayName("Given a MedicalRecord, when POST request, then return Created status")
+    public void givenAMedicalRecord_whenPostRequest_thenReturnCreatedStatus() throws Exception {
+        when(medicalRecordService.createMedicalRecord(any(MedicalRecordDTO.class))).thenReturn(any(MedicalRecordDTO.class));
 
-        when(medicalRecordService.createMedicalRecord(any(MedicalRecordDTO.class))).thenReturn(any(MedicalRecord.class));
-
-        mockMvc.perform(MockMvcRequestBuilders.post( "/medicalRecord")
+        mockMvc.perform(MockMvcRequestBuilders.post("/medicalRecord")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(medDTO)))
                 .andExpect(status().isCreated());
 
         verify(medicalRecordService).createMedicalRecord(any(MedicalRecordDTO.class));
@@ -65,13 +61,26 @@ public class MedicalRecordControllerTest {
 
     @Test
     @Tag("POST-MedicalRecord")
-    @DisplayName("Given a null MedicalRecord, when createMedicalRecord, then return BadRequest status")
-    public void givenANullMedicalRecord_whenCreateMedicalRecord_thenReturnBadRequestStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(null);
+    @DisplayName("Given a MedicalRecord with incomplete ID, when POST request, then return BadRequest status")
+    public void givenAMedicalRecordWithIncompleteID_whenPostRequest_thenReturnBadRequestStatus() throws Exception {
+        MedicalRecordDTO medDTO = new MedicalRecordDTO("", "Boyd", "03/06/1984",
+                Arrays.asList("aznol:350mg"), Arrays.asList("nillacilan", "peanut"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/medicalRecord")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(medDTO)))
+                .andExpect(status().isBadRequest());
+
+        verify(medicalRecordService, times(0)).createMedicalRecord(any(MedicalRecordDTO.class));
+    }
+
+    @Test
+    @Tag("POST-MedicalRecord")
+    @DisplayName("Given an empty body request, when POST request, then return BadRequest status")
+    public void givenAnEmptyBodyRequest_whenPostRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/medicalRecord")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(""))
                 .andExpect(status().isBadRequest());
 
         verify(medicalRecordService, times(0)).createMedicalRecord(any(MedicalRecordDTO.class));
@@ -79,15 +88,13 @@ public class MedicalRecordControllerTest {
 
     @Test
     @Tag("PUT-MedicalRecord")
-    @DisplayName("Given a MedicalRecord to update, when updateMedicalRecord, then return Ok status")
-    public void givenAMedicalRecordToUpdate_whenUpdateMedicalRecord_thenReturnOkStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(medDTO);
-        when(medicalRecordService.updateMedicalRecord(any(MedicalRecordDTO.class))).thenReturn(any(MedicalRecord.class));
+    @DisplayName("Given a MedicalRecord to update, when PUT request, then return Ok status")
+    public void givenAMedicalRecordToUpdate_whenPutRequest_thenReturnOkStatus() throws Exception {
+        when(medicalRecordService.updateMedicalRecord(any(MedicalRecordDTO.class))).thenReturn(any(MedicalRecordDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/medicalRecord")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(medDTO)))
                 .andExpect(status().isOk());
 
         verify(medicalRecordService).updateMedicalRecord(any(MedicalRecordDTO.class));
@@ -95,14 +102,26 @@ public class MedicalRecordControllerTest {
 
     @Test
     @Tag("PUT-MedicalRecord")
-    @DisplayName("Given a null MedicalRecord, when updateMedicalRecord, then return BadRequest status")
-    public void givenANullMedicalRecord_whenUpdateMedicalRecord_thenReturnBadRequestStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(null);
+    @DisplayName("Given a MedicalRecord with incomplete ID, when PUT request, then return BadRequest status")
+    public void givenAMedicalRecordWithIncompleteID_whenPutRequest_thenReturnBadRequestStatus() throws Exception {
+        MedicalRecordDTO medDTO = new MedicalRecordDTO("", "Boyd", "03/06/1984",
+                Arrays.asList("aznol:350mg"), Arrays.asList("nillacilan", "peanut"));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/medicalRecord")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(medDTO)))
+                .andExpect(status().isBadRequest());
+
+        verify(medicalRecordService, times(0)).updateMedicalRecord(any(MedicalRecordDTO.class));
+    }
+
+    @Test
+    @Tag("PUT-MedicalRecord")
+    @DisplayName("Given empty body request, when PUT request, then return BadRequest status")
+    public void givenEmptyBodyRequest_whenPutRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/medicalRecord")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString("")))
                 .andExpect(status().isBadRequest());
 
         verify(medicalRecordService, times(0)).updateMedicalRecord(any(MedicalRecordDTO.class));
@@ -110,29 +129,51 @@ public class MedicalRecordControllerTest {
 
     @Test
     @Tag("DELETE-MedicalRecord")
-    @DisplayName("Given a MedicalRecord to delete, when deleteMedicalRecord, then return Ok status")
-    public void givenAMedicalRecordToDelete_whenDeleteMedicalRecord_thenReturnOkStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(medDTO);
-
+    @DisplayName("Given valid Id param, when DELETE request, then return OK status")
+    public void givenValidIdParam_whenDeleteRequest_thenReturnOkStatus() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/medicalRecord")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .param("firstName", "John")
+                .param("lastName", "Boyd"))
                 .andExpect(status().isOk());
 
-        verify(medicalRecordService).deleteMedicalRecord(any(MedicalRecordDTO.class));
+        verify(medicalRecordService).deleteMedicalRecord(anyString(), anyString());
     }
 
     @Test
     @Tag("DELETE-MedicalRecord")
-    @DisplayName("Given a null MedicalRecord, when deleteMedicalRecord, then return BadRequest status")
-    public void givenANullMedicalRecord_whenDeleteMedicalRecord_thenReturnBadRequestStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(null);
-
+    @DisplayName("Given incomplete Id param, when DELETE request, then return BadRequest status")
+    public void givenIncompleteIdParam_whenDeleteRequest_thenReturnBadRequestStatus() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/medicalRecord")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .param("firstName", "")
+                .param("lastName", "Boyd"))
                 .andExpect(status().isBadRequest());
 
-        verify(medicalRecordService, times(0)).deleteMedicalRecord(any(MedicalRecordDTO.class));
+        verify(medicalRecordService, times(0)).deleteMedicalRecord(anyString(), anyString());
+    }
+
+    @Test
+    @Tag("GET-MedicalRecord")
+    @DisplayName("Given valid Id param, when GET request, then return OK status")
+    public void givenValidIdParam_whenGetRequest_thenReturnOkStatus() throws Exception {
+        when(medicalRecordService.getMedicalRecordById(anyString(), anyString())).thenReturn(medDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/medicalRecord")
+                .param("firstName", "John")
+                .param("lastName", "Boyd"))
+                .andExpect(status().isOk());
+
+        verify(medicalRecordService).getMedicalRecordById(anyString(), anyString());
+    }
+
+    @Test
+    @Tag("GET-MedicalRecord")
+    @DisplayName("Given incomplete Id param, when GET request, then return BadRequest status")
+    public void givenIncompleteIdParam_whenGetRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/medicalRecord")
+                .param("firstName", "John")
+                .param("lastName", ""))
+                .andExpect(status().isBadRequest());
+
+        verify(medicalRecordService, times(0)).getMedicalRecordById(anyString(), anyString());
     }
 }

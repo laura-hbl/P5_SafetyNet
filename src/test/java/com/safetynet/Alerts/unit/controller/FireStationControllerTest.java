@@ -3,7 +3,6 @@ package com.safetynet.Alerts.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.Alerts.controller.FireStationController;
 import com.safetynet.Alerts.dto.FireStationDTO;
-import com.safetynet.Alerts.model.FireStation;
 import com.safetynet.Alerts.service.FireStationService;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,15 +44,13 @@ public class FireStationControllerTest {
 
     @Test
     @Tag("POST-FireStation")
-    @DisplayName("Given a FireStation to add, when createFireStation, then return Created status")
-    public void givenAFireStationToAdd_whenCreateFireStation_thenReturnCreatedStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(fireDTO);
-
-        when(fireStationService.createFireStation(any(FireStationDTO.class))).thenReturn(any(FireStation.class));
+    @DisplayName("Given a FireStation to add, when POST request, then return Created status")
+    public void givenAFireStationToAdd_whenPostRequest_thenReturnCreatedStatus() throws Exception {
+        when(fireStationService.createFireStation(any(FireStationDTO.class))).thenReturn(any(FireStationDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(fireDTO)))
                 .andExpect(status().isCreated());
 
         verify(fireStationService).createFireStation(any(FireStationDTO.class));
@@ -61,13 +58,25 @@ public class FireStationControllerTest {
 
     @Test
     @Tag("POST-FireStation")
-    @DisplayName("Given a null FireStation, when createFireStation, then return BadRequest status")
-    public void givenANullFireStation_whenCreateFireStation_thenReturnBadRequestStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(null);
+    @DisplayName("Given a FireStation with missing address, when POST request, then return BadRequest status")
+    public void givenAFireStationWithMissingAddress_whenPostRequest_thenReturnBadRequestStatus() throws Exception {
+        FireStationDTO fireDTO = new FireStationDTO("", 2);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(fireDTO)))
+                .andExpect(status().isBadRequest());
+
+        verify(fireStationService, times(0)).createFireStation(any(FireStationDTO.class));
+    }
+
+    @Test
+    @Tag("POST-FireStation")
+    @DisplayName("Given an empty body request, when POST request, then return BadRequest status")
+    public void givenAnEmptyBodyRequest_whenPostRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/firestation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(""))
                 .andExpect(status().isBadRequest());
 
         verify(fireStationService, times(0)).createFireStation(any(FireStationDTO.class));
@@ -75,16 +84,13 @@ public class FireStationControllerTest {
 
     @Test
     @Tag("PUT-FireStation")
-    @DisplayName("Given a FireStation to update, when updateFireStation, then return Ok status")
-    public void givenAFireStationToUpdate_whenUpdateFireStation_thenReturnOkStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(fireDTO);
-
-        when(fireStationService.updateFireStation(any(FireStationDTO.class))).thenReturn(any(FireStation.class));
+    @DisplayName("Given a FireStation to update, when PUT request, then return Ok status")
+    public void givenAFireStationToUpdate_whenPutRequest_thenReturnOkStatus() throws Exception {
+        when(fireStationService.updateFireStation(any(FireStationDTO.class))).thenReturn(any(FireStationDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders.put("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(fireDTO)))
                 .andExpect(status().isOk());
 
         verify(fireStationService).updateFireStation(any(FireStationDTO.class));
@@ -92,14 +98,25 @@ public class FireStationControllerTest {
 
     @Test
     @Tag("PUT-FireStation")
-    @DisplayName("Given a null FireStation, when updateFireStation, then return BadRequest status")
-    public void givenANullFireStation_whenUpdateFireStation_thenReturnBadRequestStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(null);
+    @DisplayName("Given a FireStation with incomplete key ID, when PUT request, then return BadRequest status")
+    public void givenAFireStationWithIncompleteKeyID_whenPutRequest_thenReturnBadRequestStatus() throws Exception {
+        FireStationDTO fireDTO = new FireStationDTO("", 2);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .content(objectMapper.writeValueAsString(fireDTO)))
+                .andExpect(status().isBadRequest());
+
+        verify(fireStationService, times(0)).updateFireStation(any(FireStationDTO.class));
+    }
+
+    @Test
+    @Tag("PUT-FireStation")
+    @DisplayName("Given empty body request, when PUT request, then return BadRequest status")
+    public void givenEmptyBodyRequest_whenPutRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/firestation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString("")))
                 .andExpect(status().isBadRequest());
 
         verify(fireStationService, times(0)).updateFireStation(any(FireStationDTO.class));
@@ -107,29 +124,51 @@ public class FireStationControllerTest {
 
     @Test
     @Tag("DELETE-FireStation")
-    @DisplayName("Given a FireStation to delete, when deleteFireStation, then return Ok status")
-    public void givenAFireStationToDelete_whenDeleteFireStation_thenReturnOkStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(fireDTO);
-
+    @DisplayName("Given a valid FireStation key ID, when DELETE request, then return OK status")
+    public void givenValidIdKeyId_whenDeleteRequest_thenReturnOkStatus() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/firestation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .param("address", "29 15th St")
+                .param("station", "2"))
                 .andExpect(status().isOk());
 
-        verify(fireStationService).deleteFireStation(any(FireStationDTO.class));
+        verify(fireStationService).deleteFireStation(anyString(), anyInt());
     }
 
     @Test
     @Tag("DELETE-FireStation")
-    @DisplayName("Given a null FireStation, when deleteFireStation, then return BadRequest status")
-    public void givenANullFireStation_whenDeleteFireStation_thenReturnBadRequestStatus() throws Exception {
-        String jsonContent = objectMapper.writeValueAsString(null);
-
+    @DisplayName("Given incomplete Key ID, when DELETE request, then return BadRequest status")
+    public void givenIncompleteKeyId_whenDeleteRequest_thenReturnBadRequestStatus() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/firestation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonContent))
+                .param("address", "")
+                .param("station", "2"))
                 .andExpect(status().isBadRequest());
 
-        verify(fireStationService, times(0)).deleteFireStation(any(FireStationDTO.class));
+        verify(fireStationService, times(0)).deleteFireStation(anyString(), anyInt());
+    }
+
+    @Test
+    @Tag("GET-FireStation")
+    @DisplayName("Given valid key ID, when GET request, then return OK status")
+    public void givenValidIdParam_whenGetRequest_thenReturnOkStatus() throws Exception {
+        when(fireStationService.getFireStationByKeyId(anyString(), anyInt())).thenReturn(fireDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/fireStation")
+                .param("address", "29 15th St")
+                .param("station", "2"))
+                .andExpect(status().isOk());
+
+        verify(fireStationService).getFireStationByKeyId(anyString(), anyInt());
+    }
+
+    @Test
+    @Tag("GET-FireStation")
+    @DisplayName("Given incomplete key ID, when GET request, then return BadRequest status")
+    public void givenIncompleteKeyId_whenGetRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/fireStation")
+                .param("address", "")
+                .param("station", "2"))
+                .andExpect(status().isBadRequest());
+
+        verify(fireStationService, times(0)).getFireStationByKeyId(anyString(), anyInt());
     }
 }
