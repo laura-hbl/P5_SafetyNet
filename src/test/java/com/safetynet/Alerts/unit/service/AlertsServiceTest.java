@@ -2,7 +2,6 @@ package com.safetynet.Alerts.unit.service;
 
 import com.safetynet.Alerts.dto.*;
 import com.safetynet.Alerts.model.FireStation;
-import com.safetynet.Alerts.model.MedicalRecord;
 import com.safetynet.Alerts.model.Person;
 import com.safetynet.Alerts.service.AlertsService;
 import com.safetynet.Alerts.service.FireStationService;
@@ -50,9 +49,9 @@ public class AlertsServiceTest {
     private static Person person2;
     private static Person person3;
 
-    private static MedicalRecord med1;
-    private static MedicalRecord med2;
-    private static MedicalRecord med3;
+    private static MedicalRecordDTO med1;
+    private static MedicalRecordDTO med2;
+    private static MedicalRecordDTO med3;
 
     @Before
     public void setUp() {
@@ -64,32 +63,32 @@ public class AlertsServiceTest {
                 97451, "841-874-7458", "gramps@email.com");
         personList = Arrays.asList(person1, person2, person3);
 
-        med1 = new MedicalRecord("John", "Boyd", "03/06/1984",
+        med1 = new MedicalRecordDTO("John", "Boyd", "03/06/1984",
                 Arrays.asList("aznol:350mg"), Arrays.asList("nillacilan"));
-        med2 = new MedicalRecord("Tony", "Cooper", "09/18/2015",
+        med2 = new MedicalRecordDTO("Tony", "Cooper", "09/18/2015",
                 Arrays.asList("noxidian:100mg"), Arrays.asList(""));
-        med3 = new MedicalRecord("Eric", "Cadigan", "02/07/1991",
+        med3 = new MedicalRecordDTO("Eric", "Cadigan", "02/07/1991",
                 Arrays.asList(""), Arrays.asList("peanut"));
     }
 
     @Test
     @Tag("PersonsByStation")
-    @DisplayName("Given a station number, when getPersonsByStation, then return expected persons by station with correct adult" +
-            " and child number")
+    @DisplayName("Given a station number, when getPersonsByStation, then return expected persons by station with " +
+            "correct adult and child number")
     public void givenAStationNumber_whenGetPersonsByStation_thenReturnExpectedPersonsByStation() {
         when(personService.getPersonList()).thenReturn(personList);
         when(fireStationService.getAddressesByStation(2)).thenReturn(Arrays.asList("1509 Culver St"));
         when(medicalRecordService.getMedicalRecordById("John", "Boyd")).thenReturn(med1);
         when(medicalRecordService.getMedicalRecordById("Tony", "Cooper")).thenReturn(med2);
-        when(ageCalculator.getAge(LocalDate.of(1984,3,6))).thenReturn(36);
-        when(ageCalculator.getAge(LocalDate.of(2015,9,18))).thenReturn(5);
+        when(ageCalculator.getAge(LocalDate.of(1984, 3, 6))).thenReturn(36);
+        when(ageCalculator.getAge(LocalDate.of(2015, 9, 18))).thenReturn(5);
 
         PersonsByStationDTO result = alertsService.getPersonsByStation(2);
 
         assertThat(result.getPersonsByStation().size()).isEqualTo(2);
         assertThat(result.getAdultNumber()).isEqualTo(1);
         assertThat(result.getChildNumber()).isEqualTo(1);
-        InOrder inOrder = inOrder(personService, fireStationService,medicalRecordService, ageCalculator);
+        InOrder inOrder = inOrder(personService, fireStationService, medicalRecordService, ageCalculator);
         inOrder.verify(personService).getPersonList();
         inOrder.verify(fireStationService).getAddressesByStation(anyInt());
         inOrder.verify(medicalRecordService).getMedicalRecordById(anyString(), anyString());
@@ -154,8 +153,8 @@ public class AlertsServiceTest {
                 person2));
         when(medicalRecordService.getMedicalRecordById("John", "Boyd")).thenReturn(med1);
         when(medicalRecordService.getMedicalRecordById("Tony", "Cooper")).thenReturn(med2);
-        when(ageCalculator.getAge(LocalDate.of(1984,3,6))).thenReturn(36);
-        when(ageCalculator.getAge(LocalDate.of(2015,9,18))).thenReturn(5);
+        when(ageCalculator.getAge(LocalDate.of(1984, 3, 6))).thenReturn(36);
+        when(ageCalculator.getAge(LocalDate.of(2015, 9, 18))).thenReturn(5);
 
         ChildAlertDTO result = alertsService.getChildByAddress("1509 Culver St");
 
@@ -163,19 +162,20 @@ public class AlertsServiceTest {
         assertThat(result.getHomeMembers().size()).isEqualTo(1);
         verify(personService).getPersonsByAddress(anyString());
         verify(medicalRecordService, times(2)).getMedicalRecordById(anyString(), anyString());
-        verify(ageCalculator,times(2)).getAge(any(LocalDate.class));
+        verify(ageCalculator, times(2)).getAge(any(LocalDate.class));
     }
 
     @Test
     @Tag("Fire")
-    @DisplayName("Given an address, when getPersonsByAddress, then result should match expected persons by address and station number")
+    @DisplayName("Given an address, when getPersonsByAddress, then result should match expected persons by address " +
+            "and station number")
     public void givenAnAddress_whenGetPersonsByAddress_thenReturnExpectedPersonsByAddressAndStationNumber() {
         when(personService.getPersonsByAddress("1509 Culver St")).thenReturn(Arrays.asList(person1,
                 person2));
         when(medicalRecordService.getMedicalRecordById("John", "Boyd")).thenReturn(med1);
         when(medicalRecordService.getMedicalRecordById("Tony", "Cooper")).thenReturn(med2);
-        when(ageCalculator.getAge(LocalDate.of(1984,3,6))).thenReturn(36);
-        when(ageCalculator.getAge(LocalDate.of(2015,9,18))).thenReturn(5);
+        when(ageCalculator.getAge(LocalDate.of(1984, 3, 6))).thenReturn(36);
+        when(ageCalculator.getAge(LocalDate.of(2015, 9, 18))).thenReturn(5);
         when(fireStationService.getFireStationByAddress("1509 Culver St")).thenReturn(new FireStation(
                 "1509 Culver St", 1));
 
@@ -191,7 +191,8 @@ public class AlertsServiceTest {
 
     @Test
     @Tag("Flood")
-    @DisplayName("Given a stations list, when getHouseholdsByStation, then result should match expected households by station")
+    @DisplayName("Given a stations list, when getHouseholdsByStation, then result should match expected households " +
+            "by station")
     public void givenAStationList_whenGetHouseholdsByStation_thenReturnExpectedHouseholdsByStation() {
         when(fireStationService.getAddressesByStation(3)).thenReturn(Arrays.asList("1509 Culver St"));
         when(fireStationService.getAddressesByStation(1)).thenReturn(Arrays.asList("951 LoneTree Rd"));

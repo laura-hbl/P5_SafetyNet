@@ -6,6 +6,8 @@ import com.safetynet.Alerts.exception.DataNotFoundException;
 import com.safetynet.Alerts.model.FireStation;
 import com.safetynet.Alerts.repository.FireStationRepository;
 import com.safetynet.Alerts.service.FireStationService;
+import com.safetynet.Alerts.util.DTOConverter;
+import com.safetynet.Alerts.util.ModelConverter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,6 +32,12 @@ public class FireStationServiceTest {
 
     @Mock
     private FireStationRepository fireStationRepositoryMock;
+
+    @Mock
+    private DTOConverter dtoConverter;
+
+    @Mock
+    private ModelConverter modelConverter;
 
     @InjectMocks
     private FireStationService fireStationService;
@@ -53,37 +62,46 @@ public class FireStationServiceTest {
     @Tag("CreateFireStation")
     @DisplayName("Given a FireStation, when createFireStation, then FireStation should be saved successfully")
     public void givenAFireStation_whenCreateFireStation_thenFireStationShouldBeSavedCorrectly() {
-        when(fireStationRepositoryMock.find(any(FireStation.class))).thenReturn(null);
+        when(fireStationRepositoryMock.find(anyString(), anyInt())).thenReturn(null);
+        when(modelConverter.toFireStation(any(FireStationDTO.class))).thenReturn(fire1);
         when(fireStationRepositoryMock.save(any(FireStation.class))).thenReturn(fire1);
+        when(dtoConverter.toFireStationDTO(any(FireStation.class))).thenReturn(fireSDTO);
 
-        FireStation fireCreated = fireStationService.createFireStation(fireSDTO);
+        FireStationDTO fireCreated = fireStationService.createFireStation(fireSDTO);
 
-        assertThat(fireCreated).isEqualTo(fire1);
-        InOrder inOrder = inOrder(fireStationRepositoryMock);
-        inOrder.verify(fireStationRepositoryMock).find(any(FireStation.class));
+        assertNotNull(fireCreated);
+        assertThat(fireCreated).isEqualToComparingFieldByField(fireSDTO);
+        InOrder inOrder = inOrder(fireStationRepositoryMock, modelConverter, dtoConverter);
+        inOrder.verify(fireStationRepositoryMock).find(anyString(), anyInt());
+        inOrder.verify(modelConverter).toFireStation(any(FireStationDTO.class));
         inOrder.verify(fireStationRepositoryMock).save(any(FireStation.class));
+        inOrder.verify(dtoConverter).toFireStationDTO(any(FireStation.class));
     }
 
     @Test(expected = DataAlreadyRegisteredException.class)
     @Tag("CreateFireStation")
     @DisplayName("Given a registered FireStation, when createFireStation, then throw DataAlreadyRegisteredException")
     public void givenARegisteredFireStation_whenCreateFireStation_thenDataAlreadyRegisteredExceptionIsThrown() {
-        when(fireStationRepositoryMock.find(any(FireStation.class))).thenReturn(fire1);
+        when(fireStationRepositoryMock.find(anyString(), anyInt())).thenReturn(fire1);
 
         fireStationService.createFireStation(fireSDTO);
     }
 
     @Test
     @Tag("UpdateFireStation")
-    @DisplayName("Given a registered FireStation, when updateFireStation, then FireStation should be updated successfully")
-    public void givenARegisteredFireStation_whenUpdateFireStation_thenFireStationShouldBeUpdateCorrectly() {
+    @DisplayName("Given a registered FireStation, when updateFireStation, then FireStation should be updated " +
+            "correctly")
+    public void givenARegisteredFireStation_whenUpdateFireStation_thenFireStationShouldBeUpdatedCorrectly() {
         fireSDTO = new FireStationDTO("29 15th St", 1);
         when(fireStationRepositoryMock.findByAddress(anyString())).thenReturn(fire1);
+        when(dtoConverter.toFireStationDTO(any(FireStation.class))).thenReturn(fireSDTO);
 
-        FireStation fireSUpdated = fireStationService.updateFireStation(fireSDTO);
+        FireStationDTO fireUpdated = fireStationService.updateFireStation(fireSDTO);
 
-        assertThat(fireSUpdated.getStation()).isEqualTo(1);
-        verify(fireStationRepositoryMock).findByAddress(anyString());
+        assertThat(fireUpdated.getStation()).isEqualTo(1);
+        InOrder inOrder = inOrder(fireStationRepositoryMock, dtoConverter);
+        inOrder.verify(fireStationRepositoryMock).findByAddress(anyString());
+        inOrder.verify(dtoConverter).toFireStationDTO(any(FireStation.class));
     }
 
     @Test(expected = DataNotFoundException.class)
@@ -97,14 +115,15 @@ public class FireStationServiceTest {
 
     @Test
     @Tag("DeleteFireStation")
-    @DisplayName("Given a registered FireStation, when deleteFireStation, then delete process should be done in correct order")
+    @DisplayName("Given a registered FireStation, when deleteFireStation, then delete process should be done in " +
+            "correct order")
     public void givenARegisteredFireStation_whenDeleteFireStation_thenDeletingShouldBeDoneInCorrectOrder() {
-        when(fireStationRepositoryMock.find(any(FireStation.class))).thenReturn(fire1);
+        when(fireStationRepositoryMock.find(anyString(), anyInt())).thenReturn(fire1);
 
-        fireStationService.deleteFireStation(fireSDTO);
+        fireStationService.deleteFireStation(fire1.getAddress(), fire1.getStation());
 
         InOrder inOrder = inOrder(fireStationRepositoryMock);
-        inOrder.verify(fireStationRepositoryMock).find(any(FireStation.class));
+        inOrder.verify(fireStationRepositoryMock).find(anyString(), anyInt());
         inOrder.verify(fireStationRepositoryMock).delete(any(FireStation.class));
     }
 
@@ -112,14 +131,15 @@ public class FireStationServiceTest {
     @Tag("DeleteFireStation")
     @DisplayName("If FireStation is not registered, when deleteFireStation, then throw DataNotFoundException")
     public void givenUnFoundFireStation_whenDeleteFireStation_thenDataNotFoundExceptionIsThrown() {
-        when(fireStationRepositoryMock.find(any(FireStation.class))).thenReturn(null);
+        when(fireStationRepositoryMock.find(anyString(), anyInt())).thenReturn(null);
 
-        fireStationService.deleteFireStation(fireSDTO);
+        fireStationService.deleteFireStation(fire1.getAddress(), fire1.getStation());
     }
 
     @Test
     @Tag("GetFireStationByAddress")
-    @DisplayName("Given a FireStation by address, when getFireStationByAddress, then the FireStation by address should be Returned correctly")
+    @DisplayName("Given a FireStation by address, when getFireStationByAddress, then the FireStation by address " +
+            "should be Returned correctly")
     public void givenAFireStationByAddress_whenGetFireStationByAddress_thenFireStationByAddressShouldBeReturnCorrectly() {
         when(fireStationRepositoryMock.findByAddress(anyString())).thenReturn(fire1);
 
@@ -131,7 +151,8 @@ public class FireStationServiceTest {
 
     @Test(expected = DataNotFoundException.class)
     @Tag("GetFireStationByAddress")
-    @DisplayName("If FireStation by address can't be found, when getFireStationByAddress, then throw DataNotFoundException")
+    @DisplayName("If FireStation by address can't be found, when getFireStationByAddress, then throw " +
+            "DataNotFoundException")
     public void givenUnFoundFireStationByAddress_whenGetFireStationByAddress_thenDataNotFoundExceptionIsThrown() {
         when(fireStationRepositoryMock.findByAddress(anyString())).thenReturn(null);
 
@@ -140,7 +161,8 @@ public class FireStationServiceTest {
 
     @Test
     @Tag("GetAddressesByStation")
-    @DisplayName("Given an addresses by station list, when getAddressesByStation, then the addresses by station list should be returned correctly")
+    @DisplayName("Given an addresses by station list, when getAddressesByStation, then the addresses by station list " +
+            "should be returned correctly")
     public void givenAnAddressList_whenGetAddressesByStation_thenReturnExpectedAddressList() {
         when(fireStationRepositoryMock.findByStation(anyInt())).thenReturn(fireStations);
         List<String> expectedAddresses = Arrays.asList("29 15th St", "83 Binoc Ave");
@@ -159,5 +181,31 @@ public class FireStationServiceTest {
         when(fireStationRepositoryMock.findByStation(anyInt())).thenReturn(Collections.emptyList());
 
         fireStationService.getAddressesByStation(anyInt());
+    }
+
+    @Test
+    @Tag("GetFireStationByKeyId")
+    @DisplayName("Given a FireStation key ID, when getFireStationByKeyId, then expected FireStation " +
+            "should be returned correctly")
+    public void givenFireStationKeyId_whenGetFireStationByKeyId_thenExpectedFireStationShouldBeReturnCorrectly() {
+        when(fireStationRepositoryMock.find(anyString() ,anyInt())).thenReturn(fire1);
+        when(dtoConverter.toFireStationDTO(any(FireStation.class))).thenReturn(fireSDTO);
+
+        FireStationDTO fireByIdFound = fireStationService.getFireStationByKeyId(fire1.getAddress(), fire1.getStation());
+
+        assertThat(fireByIdFound).isEqualTo(fireSDTO);
+        InOrder inOrder = inOrder(fireStationRepositoryMock, dtoConverter);
+        inOrder.verify(fireStationRepositoryMock).find(anyString(), anyInt());
+        inOrder.verify(dtoConverter).toFireStationDTO(any(FireStation.class));
+    }
+
+    @Test(expected = DataNotFoundException.class)
+    @Tag("GetFireStationByKeyId")
+    @DisplayName("If FireStation by ID can't be found, when getFireStationByKeyId, then throw " +
+            "DataNotFoundException")
+    public void givenUnFoundFireStationByKeyId_whenGetFireStationByKeyId_thenDataNotFoundExceptionIsThrown() {
+        when(fireStationRepositoryMock.find(anyString() ,anyInt())).thenReturn(null);
+
+        fireStationService.getFireStationByKeyId(fire1.getAddress(), fire1.getStation());
     }
 }

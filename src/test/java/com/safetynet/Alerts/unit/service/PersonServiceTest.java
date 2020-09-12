@@ -6,6 +6,8 @@ import com.safetynet.Alerts.exception.DataNotFoundException;
 import com.safetynet.Alerts.model.Person;
 import com.safetynet.Alerts.repository.PersonRepository;
 import com.safetynet.Alerts.service.PersonService;
+import com.safetynet.Alerts.util.DTOConverter;
+import com.safetynet.Alerts.util.ModelConverter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -30,6 +33,12 @@ public class PersonServiceTest {
 
     @Mock
     private PersonRepository personRepositoryMock;
+
+    @Mock
+    private DTOConverter dtoConverter;
+
+    @Mock
+    private ModelConverter modelConverter;
 
     @InjectMocks
     private PersonService personService;
@@ -80,18 +89,22 @@ public class PersonServiceTest {
 
     @Test
     @Tag("CreatePerson")
-    @DisplayName("If person is not registered, when createPerson, then person should be saved successfully")
+    @DisplayName("If person is not registered, when createPerson, then person should be saved correctly")
     public void givenAnUnRegisteredPerson_whenCreatePerson_thenPersonShouldBeSavedCorrectly() {
         when(personRepositoryMock.findByIdentity(anyString(), anyString())).thenReturn(null);
-        when(personRepositoryMock.save(any(Person.class))).thenReturn(person1);
+        when(modelConverter.toPerson(any(PersonDTO.class))).thenReturn(person1);
+        when(personRepositoryMock.save(person1)).thenReturn(person1);
+        when(dtoConverter.toPersonDTO(any(Person.class))).thenReturn(personDTO);
 
-        Person personSaved = personService.createPerson(personDTO);
+        PersonDTO personSaved = personService.createPerson(personDTO);
 
-        assertThat(personSaved).isEqualTo(person1);
-        InOrder inOrder = inOrder(personRepositoryMock);
+        assertNotNull(personSaved);
+        assertThat(personSaved).isEqualToComparingFieldByField(person1);
+        InOrder inOrder = inOrder(personRepositoryMock, modelConverter, dtoConverter);
         inOrder.verify(personRepositoryMock).findByIdentity(anyString(), anyString());
+        inOrder.verify(modelConverter).toPerson(any(PersonDTO.class));
         inOrder.verify(personRepositoryMock).save(any(Person.class));
-
+        inOrder.verify(dtoConverter).toPersonDTO(any(Person.class));
     }
 
     @Test(expected = DataAlreadyRegisteredException.class)
@@ -105,16 +118,19 @@ public class PersonServiceTest {
 
     @Test
     @Tag("UpdatePerson")
-    @DisplayName("Given a registered person, when updatePerson, then person should be updated successfully")
+    @DisplayName("Given a registered person, when updatePerson, then person should be updated correctly")
     public void givenAPerson_whenUpdatePerson_thenPersonShouldBeUpdateCorrectly() {
         personDTO = new PersonDTO("John", "Boyd", "892 Downing Ct", "Culver",
                 97451, "841-874-6512", "jaboyd@email.com");
         when(personRepositoryMock.findByIdentity(anyString(), anyString())).thenReturn(person1);
+        when(dtoConverter.toPersonDTO(any(Person.class))).thenReturn(personDTO);
 
-        Person person1Updated = personService.updatePerson(personDTO);
+        PersonDTO personUpdated = personService.updatePerson(personDTO);
 
-        assertThat(person1Updated.getAddress()).isEqualTo("892 Downing Ct");
-        verify(personRepositoryMock).findByIdentity(anyString(), anyString());
+        assertThat(personUpdated).isEqualToComparingFieldByField(personDTO);
+        InOrder inOrder = inOrder(personRepositoryMock, dtoConverter);
+        inOrder.verify(personRepositoryMock).findByIdentity(anyString(), anyString());
+        inOrder.verify(dtoConverter).toPersonDTO(any(Person.class));
     }
 
     @Test(expected = DataNotFoundException.class)
@@ -128,11 +144,11 @@ public class PersonServiceTest {
 
     @Test
     @Tag("DeletePerson")
-    @DisplayName("Given a registered person, when deletePerson, then the delete process should be done in correct order")
-    public void givenARegisteredPerson_whenDeletePerson_thenDeletingShouldBeDoneInCorrectOrder() {
+    @DisplayName("Given person Id, when deletePerson, then delete process should be done in correct order")
+    public void givenAPersonId_whenDeletePerson_thenDeletingShouldBeDoneInCorrectOrder() {
         when(personRepositoryMock.findByIdentity(anyString(), anyString())).thenReturn(person1);
 
-        personService.deletePerson(personDTO);
+        personService.deletePerson(person1.getFirstName(), person1.getLastName());
 
         InOrder inOrder = inOrder(personRepositoryMock);
         inOrder.verify(personRepositoryMock).findByIdentity(anyString(), anyString());
@@ -141,16 +157,17 @@ public class PersonServiceTest {
 
     @Test(expected = DataNotFoundException.class)
     @Tag("DeletePerson")
-    @DisplayName("If person is not registered, when deletePerson, then throw DataNotFoundException")
+    @DisplayName("If person is not found, when deletePerson, then throw DataNotFoundException")
     public void givenUnFoundPerson_whenDeletePerson_thenDataNotFoundExceptionIsThrown() {
         when(personRepositoryMock.findByIdentity(anyString(), anyString())).thenReturn(null);
 
-        personService.deletePerson(personDTO);
+        personService.deletePerson(person1.getFirstName(), person1.getLastName());
     }
 
     @Test
     @Tag("GetPersonsByCity")
-    @DisplayName("Given a persons by city list, when getPersonsByCity, then the persons by city list should be returned successfully")
+    @DisplayName("Given a persons by city list, when getPersonsByCity, then the persons by city list should be " +
+            "returned correctly")
     public void givenPersonsByCityList_whenGetPersonsByCity_thenPersonsByCityListShouldBeReturnCorrectly() {
         when(personRepositoryMock.findByCity(anyString())).thenReturn(personList);
 
@@ -171,7 +188,8 @@ public class PersonServiceTest {
 
     @Test
     @Tag("GetPersonsByAddress")
-    @DisplayName("Given a persons by address list, when getPersonsByAddress, then the persons by address list should be returned successfully")
+    @DisplayName("Given a persons by address list, when getPersonsByAddress, then the persons by address list should" +
+            " be returned correctly")
     public void givenPersonsByAddressList_whenGetPersonsByAddress_thenPersonsByAddressListShouldBeReturnCorrectly() {
         List<Person> personsByAddressExpected = Arrays.asList(person2, person3);
         when(personRepositoryMock.findByAddress(anyString())).thenReturn(personsByAddressExpected);
@@ -189,5 +207,29 @@ public class PersonServiceTest {
         when(personRepositoryMock.findByAddress(anyString())).thenReturn(Collections.emptyList());
 
         personService.getPersonsByAddress(anyString());
+    }
+
+    @Test
+    @Tag("GetPersonsById")
+    @DisplayName("Given a Person id, when getPersonsById, then expected person should be returned correctly")
+    public void givenAPersonId_whenGetPersonsById_thenExpectedPersonShouldBeReturnCorrectly() {
+        when(personRepositoryMock.findByIdentity(anyString(), anyString())).thenReturn(person1);
+        when(dtoConverter.toPersonDTO(any(Person.class))).thenReturn(personDTO);
+
+        PersonDTO personById = personService.getPersonById(person1.getFirstName(), person1.getLastName());
+
+        assertThat(personById).isEqualTo(personDTO);
+        InOrder inOrder = inOrder(personRepositoryMock, dtoConverter);
+        inOrder.verify(personRepositoryMock).findByIdentity(anyString(), anyString());
+        inOrder.verify(dtoConverter).toPersonDTO(any(Person.class));
+    }
+
+    @Test(expected = DataNotFoundException.class)
+    @Tag("GetPersonsById")
+    @DisplayName("If person by id is not found, when getPersonById, then throw DataNotFoundException")
+    public void givenUnFoundPerson_whenGetPersonsByCity_thenDataNotFoundExceptionIsThrown() {
+        when(personRepositoryMock.findByIdentity(anyString(), anyString())).thenReturn(null);
+
+        personService.getPersonById(person1.getFirstName(), person1.getLastName());
     }
 }
