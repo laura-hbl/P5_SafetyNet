@@ -44,11 +44,11 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-PersonsByStation")
-    @DisplayName("Given a station number, when getPersonsByStation, then return Ok status")
-    public void givenAStationNumber_whenGetPersonsByStation_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given a valid station number, when PersonsByStation request, then return Ok status")
+    public void givenAValidStationNumber_whenPersonsByStationRequest_thenReturnOKStatus() throws Exception {
         when(alertsService.getPersonsByStation(anyInt())).thenReturn(any(PersonsByStationDTO.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/firestation")
+        mockMvc.perform(MockMvcRequestBuilders.get("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("stationNumber", "1"))
                 .andExpect(status().isOk());
@@ -58,9 +58,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-PersonsByStation")
-    @DisplayName("Given an empty station number, when getPersonsByStation, then return BadRequest status")
-    public void givenAnEmptyStationNumber_whenGetPersonsByStation_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/firestation")
+    @DisplayName("Given an empty station number, when PersonsByStation request, then return BadRequest status")
+    public void givenAnEmptyStationNumber_whenPersonsByStationRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/firestation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("stationNumber", ""))
                 .andExpect(status().isBadRequest());
@@ -70,11 +70,11 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-ChildAlert")
-    @DisplayName("Given an address, when getChildByAddress, then return Ok status")
-    public void givenAnAddress_whenGetChildByAddress_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given valid address, when ChildAlert request, then return Ok status")
+    public void givenAValidAddress_whenChildAlertRequest_thenReturnOKStatus() throws Exception {
         when(alertsService.getChildByAddress(anyString())).thenReturn(any(ChildAlertDTO.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/childAlert")
+        mockMvc.perform(MockMvcRequestBuilders.get("/childAlert")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("address", "29 15th St"))
                 .andExpect(status().isOk());
@@ -84,9 +84,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-ChildAlert")
-    @DisplayName("Given an empty address, when getChildByAddress, then return BadRequest status")
-    public void givenAnEmptyAddress_whenGetChildByAddress_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/childAlert")
+    @DisplayName("Given an empty address, when ChildAlert request, then return BadRequest status")
+    public void givenAnEmptyAddress_whenChildAlertRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/childAlert")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("address", ""))
                 .andExpect(status().isBadRequest());
@@ -96,11 +96,11 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-PhoneAlert")
-    @DisplayName("Given a station number, when getPhonesByStation, then return Ok status")
-    public void givenAStationNumber_whenGetPhonesByStation_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given a valid station number, when PhoneAlert request, then return Ok status")
+    public void givenValidStationNumber_whenPhoneAlertRequest_thenReturnOKStatus() throws Exception {
         when(alertsService.getPhonesByStation(anyInt())).thenReturn(any(PhoneAlertDTO.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/phoneAlert")
+        mockMvc.perform(MockMvcRequestBuilders.get("/phoneAlert")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("firestation", "2"))
                 .andExpect(status().isOk());
@@ -110,9 +110,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-PhoneAlert")
-    @DisplayName("Given an empty station number, when getPhonesByStation, then return BadRequest status")
-    public void givenAnEmptyStationNumber_whenGetPhonesByStation_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/phoneAlert")
+    @DisplayName("Given an empty station number,  when PhoneAlert request, then return BadRequest status")
+    public void givenAnEmptyStationNumber_whenPhoneAlertRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/phoneAlert")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("firestation", ""))
                 .andExpect(status().isBadRequest());
@@ -122,11 +122,11 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-Fire")
-    @DisplayName("Given an address, when getPersonsByAddress, then return Ok status")
-    public void givenAnAddress_whenGetPersonsByAddress_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given an address, when Fire request, then return Ok status")
+    public void givenAValidAddress_whenFireRequest_thenReturnOKStatus() throws Exception {
         when(alertsService.getPersonsByAddress(anyString())).thenReturn(any(FireDTO.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/fire")
+        mockMvc.perform(MockMvcRequestBuilders.get("/fire")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("address", "29 15th St"))
                 .andExpect(status().isOk());
@@ -136,9 +136,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-Fire")
-    @DisplayName("Given an empty address, when getPersonsByAddress, then return BadRequest status")
-    public void givenAnEmptyAddress_whenGetPersonsByAddress_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/fire")
+    @DisplayName("Given an empty address, when Fire request, then return BadRequest status")
+    public void givenAnEmptyAddress_whenFireRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/fire")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("address", ""))
                 .andExpect(status().isBadRequest());
@@ -148,11 +148,11 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-Flood")
-    @DisplayName("Given a station number, when getHouseholdsByStation, then return Ok status")
-    public void givenStationsNumber_whenGetHouseholdsByStation_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given a station number, when Flood request, then return Ok status")
+    public void givenStationsNumber_whenFloodRequest_thenReturnOKStatus() throws Exception {
         when(alertsService.getHouseholdsByStation(anyList())).thenReturn(any(FloodDTO.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/flood/stations")
+        mockMvc.perform(MockMvcRequestBuilders.get("/flood/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("stations", "1", "2"))
                 .andExpect(status().isOk());
@@ -162,9 +162,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-Flood")
-    @DisplayName("Given an empty station number, when getHouseholdsByStation, then return BadRequest status")
-    public void givenAnEmptyStationsNumber_whenGetHouseholdsByStation_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/flood/stations")
+    @DisplayName("Given an empty station number, when Flood request, then return BadRequest status")
+    public void givenAnEmptyStationsNumber_whenFloodRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/flood/stations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("stations", ""))
                 .andExpect(status().isBadRequest());
@@ -174,13 +174,13 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-PersonInfo")
-    @DisplayName("Given a person Id, when getPersonInfoByIdentity, then return Ok status")
-    public void givenAPersonId_whenGetPersonInfoByIdentity_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given valid person Id, when PersonInfo request, then return Ok status")
+    public void givenAPersonId_whenPersonInfoRequest_thenReturnOKStatus() throws Exception {
         PersonInfoDTO personInfo = new PersonInfoDTO(Arrays.asList(new PersonInfo("Boyd", "1509 Culver St",
-                22, "jaboyd@email.com", Arrays.asList(""),Arrays.asList("peanut"))));
+                22, "jaboyd@email.com", Arrays.asList(""), Arrays.asList("peanut"))));
         when(alertsService.getInfoByIdentity(anyString(), anyString())).thenReturn(personInfo);
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/personInfo")
+        mockMvc.perform(MockMvcRequestBuilders.get("/personInfo")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("firstName", "John")
                 .param("lastName", "Boyd"))
@@ -191,22 +191,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-PersonInfo")
-    @DisplayName("Given an empty station number, when getPersonInfoByIdentity, then return BadRequest status")
-    public void givenAnEmptyPersonId_whenGetPersonInfoByIdentity_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/personInfo")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("firstName", "")
-                .param("lastName", ""))
-                .andExpect(status().isBadRequest());
-
-        verify(alertsService, times(0)).getInfoByIdentity(anyString(), anyString());
-    }
-
-    @Test
-    @Tag("GET-PersonInfo")
-    @DisplayName("Given an incomplete person Id, when getPersonInfoByIdentity, then return BadRequest status")
-    public void givenIncompletePersonId_whenGetPersonInfoByIdentity_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/personInfo")
+    @DisplayName("Given incomplete person Id, when PersonInfo request, then return BadRequest status")
+    public void givenIncompletePersonId_whenPersonInfoRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/personInfo")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("firstName", "John")
                 .param("lastName", ""))
@@ -217,11 +204,11 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-CommunityEmail")
-    @DisplayName("Given a city, when getEmailsByCity, then return Ok status")
-    public void givenACity_whenGetEmailsByCity_thenReturnOKStatus() throws Exception {
+    @DisplayName("Given a valid city, when CommunityEmail request, then return Ok status")
+    public void givenAValidCity_whenCommunityEmailRequest_thenReturnOKStatus() throws Exception {
         when(alertsService.getEmailsByCity(anyString())).thenReturn(any(CommunityEmailDTO.class));
 
-        mockMvc.perform(MockMvcRequestBuilders.get( "/communityEmail")
+        mockMvc.perform(MockMvcRequestBuilders.get("/communityEmail")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("city", "Culver"))
                 .andExpect(status().isOk());
@@ -231,9 +218,9 @@ public class AlertsControllerTest {
 
     @Test
     @Tag("GET-CommunityEmail")
-    @DisplayName("Given an empty city, when getEmailsByCity, then return BadRequest status")
-    public void givenAnEmptyCity_whenGetEmailsByCity_thenReturnBadRequestStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get( "/communityEmail")
+    @DisplayName("Given an empty city, when CommunityEmail request, then return BadRequest status")
+    public void givenAnEmptyCity_whenCommunityEmailRequest_thenReturnBadRequestStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/communityEmail")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("city", ""))
                 .andExpect(status().isBadRequest());
