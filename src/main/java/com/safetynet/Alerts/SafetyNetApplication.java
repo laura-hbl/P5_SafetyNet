@@ -1,32 +1,39 @@
 package com.safetynet.Alerts;
 
-import com.safetynet.Alerts.data.StoredData;
-import com.safetynet.Alerts.util.DataReader;
+import com.safetynet.Alerts.data.DataStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
-import java.io.IOException;
-
+/**
+ * Launch SafetyNet Application.
+ *
+ * @author Laura Habdul
+ */
 @SpringBootApplication
 public class SafetyNetApplication {
 
+	/**
+	 * SafetyNetApplication logger.
+	 */
 	private static final Logger LOGGER = LogManager.getLogger(SafetyNetApplication.class);
 
-	@Value("${dataFile}")
-	private String dataFilePath;
-
-	public static void main(String[] args) {
+	/**
+	 * Starts SafetyNet application.
+	 *
+	 * @param args no argument
+	 */
+	public static void main(final String[] args) {
 		SpringApplication.run(SafetyNetApplication.class, args);
 	}
 
-	@Bean
-	public StoredData readData() throws IOException {
+     /**
+	 * Loads application data by calling DataStore.loadData method.
+	 */
+	public void loadSafetyNetData() throws Exception {
 		LOGGER.debug("Read Data File");
-		return DataReader.readFile(dataFilePath);
+		DataStore init = new DataStore();
+		init.loadData();
 	}
-
 }

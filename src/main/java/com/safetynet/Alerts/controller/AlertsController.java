@@ -2,7 +2,6 @@ package com.safetynet.Alerts.controller;
 
 import com.safetynet.Alerts.dto.*;
 import com.safetynet.Alerts.exception.BadRequestException;
-import com.safetynet.Alerts.service.AlertsService;
 import com.safetynet.Alerts.service.IAlertsService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,22 +14,45 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Creates REST endpoints on the application data.
+ *
+ * @author Laura Habdul
+ * @see IAlertsService
+ */
 @RestController
 public class AlertsController {
 
+    /**
+     * AlertsController logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(AlertsController.class);
 
-    IAlertsService alertsService;
+    /**
+     * IAlertsService's implement class reference.
+     */
+    private final IAlertsService alertsService;
 
+    /**
+     * Constructor of class AlertsController.
+     * Initialize alertsService.
+     *
+     * @param alertsService IAlertsService's implement class reference.
+     */
     @Autowired
-    public AlertsController(AlertsService alertsService) {
+    public AlertsController(final IAlertsService alertsService) {
         this.alertsService = alertsService;
     }
 
-
-
+    /**
+     * Retrieves the list of all persons covered by the given fire station number and the count of
+     * children and adults inside that list of people.
+     *
+     * @param station fire station number
+     * @return ResponseEntity<PersonsByStationDTO> The response object and Http Status generated
+     */
     @GetMapping("/firestation")
-    public ResponseEntity<PersonsByStationDTO> getPersonsByStation(@RequestParam("stationNumber") Integer station) {
+    public ResponseEntity<PersonsByStationDTO> getPersonsByStation(@RequestParam("stationNumber") final Integer station) {
         LOGGER.debug("GET Request on /firestation with station number {}", station);
 
         if (station == null) {
@@ -42,8 +64,14 @@ public class AlertsController {
         return new ResponseEntity<>(personsByStationDTO, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the list of children and other household members living at the given address.
+     *
+     * @param address household address
+     * @return ResponseEntity<ChildAlertDTO> The response object and Http Status generated
+     */
     @GetMapping("/childAlert")
-    public ResponseEntity<ChildAlertDTO> getChildByAddress(@RequestParam("address") String address) {
+    public ResponseEntity<ChildAlertDTO> getChildByAddress(@RequestParam("address") final String address) {
 
         LOGGER.debug("GET Request on /childAlert with address {}", address);
 
@@ -56,8 +84,14 @@ public class AlertsController {
         return new ResponseEntity<>(childAlertDTO, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the list of phone numbers of all inhabitants covered by the given station number.
+     *
+     * @param station fire station number
+     * @return ResponseEntity<PhoneAlertDTO> The response object and Http Status generated
+     */
     @GetMapping("/phoneAlert")
-    public ResponseEntity<PhoneAlertDTO> getPhonesByStation(@RequestParam("firestation") Integer station) {
+    public ResponseEntity<PhoneAlertDTO> getPhonesByStation(@RequestParam("firestation") final Integer station) {
 
         LOGGER.debug("GET Request on /phoneAlert with station number {}", station);
 
@@ -70,8 +104,15 @@ public class AlertsController {
         return new ResponseEntity<>(phoneAlertDTO, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the list of inhabitants living at the given address as well as fire station number which
+     * covers it.
+     *
+     * @param address household address
+     * @return ResponseEntity<FireDTO> The response object and Http Status generated
+     */
     @GetMapping("/fire")
-    public ResponseEntity<FireDTO> getPersonsByAddress(@RequestParam("address") String address) {
+    public ResponseEntity<FireDTO> getPersonsByAddress(@RequestParam("address") final String address) {
 
         LOGGER.debug("GET Request on /fire with address {}", address);
 
@@ -84,8 +125,14 @@ public class AlertsController {
         return new ResponseEntity<>(fireDTO, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the list of all households covered by given fire stations, grouping persons by address.
+     *
+     * @param stations fire station numbers
+     * @return ResponseEntity<FloodDTO> The response object and Http Status generated
+     */
     @GetMapping("/flood/stations")
-    public ResponseEntity<FloodDTO> getHouseholdsByStation(@RequestParam("stations") List<Integer> stations) {
+    public ResponseEntity<FloodDTO> getHouseholdsByStation(@RequestParam("stations") final List<Integer> stations) {
 
         LOGGER.debug("GET Request on /flood with stations numbers {}", stations);
 
@@ -98,9 +145,16 @@ public class AlertsController {
         return new ResponseEntity<>(floodDTO, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves a list composed of the person with the given identity as well as persons with the same name.
+     *
+     * @param firstName firstName of the person
+     * @param lastName  lastName of the person
+     * @return ResponseEntity<PersonInfoDTO> The response object and Http Status generated
+     */
     @GetMapping("/personInfo")
-    public ResponseEntity<PersonInfoDTO> getPersonInfoByIdentity(@RequestParam("firstName") String firstName,
-                                                                 @RequestParam("lastName") String lastName) {
+    public ResponseEntity<PersonInfoDTO> getPersonInfoByIdentity(@RequestParam("firstName") final String firstName,
+                                                                 @RequestParam("lastName") final String lastName) {
 
         LOGGER.debug("GET Request on /personInfo with firstName {} and lastName {}", firstName, lastName);
 
@@ -113,8 +167,14 @@ public class AlertsController {
         return new ResponseEntity<>(personInfoDTO, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the list of e-mail of all inhabitants living at the given city.
+     *
+     * @param city the city that we want inhabitants e-mails.
+     * @return ResponseEntity<CommunityEmailDTO> The response object and Http Status generated
+     */
     @GetMapping("/communityEmail")
-    public ResponseEntity<CommunityEmailDTO> getEmailsByCity(@RequestParam("city") String city) {
+    public ResponseEntity<CommunityEmailDTO> getEmailsByCity(@RequestParam("city") final String city) {
 
         LOGGER.debug("GET Request on /communityEmail with city {}", city);
 

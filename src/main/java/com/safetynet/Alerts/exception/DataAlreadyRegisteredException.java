@@ -1,10 +1,11 @@
 package com.safetynet.Alerts.exception;
 
+/**
+ * Exception thrown when user tries to create already registered data.
+ */
 public class DataAlreadyRegisteredException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
-
-    public DataAlreadyRegisteredException(String message) {
+    public DataAlreadyRegisteredException(final String message) {
         super(message);
     }
 }

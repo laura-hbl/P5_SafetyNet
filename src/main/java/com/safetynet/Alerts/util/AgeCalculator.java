@@ -7,12 +7,26 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.Period;
 
+/**
+ * Calculates a person'age.
+ *
+ * @author Laura Habdul
+ */
 @Component
 public class AgeCalculator {
 
+    /**
+     * AgeCalculator logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(AgeCalculator.class);
 
-    public int getAge(LocalDate birthDate) {
+    /**
+     * Calculates a person'age from their date of birth.
+     *
+     * @param birthDate birth date of the person
+     * @return the person's age after calculation.
+     */
+    public int getAge(final LocalDate birthDate) {
 
         LocalDate currentDate = LocalDate.now();
         int age = Period.between(birthDate, currentDate).getYears();

@@ -9,34 +9,66 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * Contain methods that handles exceptions across the whole application.
+ *
+ * @author Laura Habdul
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    /**
+     *  GlobalExceptionHandler logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(GlobalExceptionHandler.class);
 
+    /**
+     * Handles exception of the specific type DataNotFoundException.
+     *
+     * @param ex DataNotFoundException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity handleNotFound(DataNotFoundException ex, WebRequest request) {
-
+    public ResponseEntity handleNotFound(final DataNotFoundException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
+
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Handles exception of the specific type DataAlreadyRegisteredException.
+     *
+     * @param ex DataAlreadyRegisteredException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(DataAlreadyRegisteredException.class)
-    public ResponseEntity handleConflict(DataAlreadyRegisteredException ex, WebRequest request) {
-
+    public ResponseEntity handleConflict(final DataAlreadyRegisteredException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
+
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
+    /**
+     * Handles exception of the specific type BadRequestException.
+     *
+     * @param ex BadRequestException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity handleBadRequest(BadRequestException ex, WebRequest request) {
-
+    public ResponseEntity handleBadRequest(final BadRequestException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
+
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 }

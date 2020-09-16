@@ -1,25 +1,30 @@
 package com.safetynet.Alerts.exception;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
+/**
+ * Permits the storage and retrieving of customized error response.
+ *
+ * @author Laura Habdul
+ */
 public class ErrorDetails {
 
-    private Date timestamp;
+    private LocalDateTime timestamp;
     private String message;
     private String details;
 
-    public ErrorDetails(Date timestamp, String message, String details) {
+    public ErrorDetails(LocalDateTime timestamp, final String message, final String details) {
         super();
         this.timestamp = timestamp;
         this.message = message;
         this.details = details;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -27,7 +32,7 @@ public class ErrorDetails {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -35,7 +40,7 @@ public class ErrorDetails {
         return details;
     }
 
-    public void setDetails(String details) {
+    public void setDetails(final String details) {
         this.details = details;
     }
 }

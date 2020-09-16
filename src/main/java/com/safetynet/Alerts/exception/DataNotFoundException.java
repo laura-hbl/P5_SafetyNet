@@ -1,10 +1,11 @@
 package com.safetynet.Alerts.exception;
 
+/**
+ * Exception thrown when user tries to access some data that are not registered.
+ */
 public class DataNotFoundException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
-
-    public DataNotFoundException(String message) {
+    public DataNotFoundException(final String message) {
         super(message);
     }
 }
