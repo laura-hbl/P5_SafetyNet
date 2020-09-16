@@ -1,21 +1,29 @@
 package com.safetynet.Alerts.unit.repository;
 
-import com.safetynet.Alerts.data.StoredData;
+import com.safetynet.Alerts.data.DataStore;
 import com.safetynet.Alerts.model.Person;
 import com.safetynet.Alerts.repository.PersonRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PersonRepositoryTest {
 
     private PersonRepository personRepository;
+
+    @Mock
+    private DataStore dataStore;
 
     private static Person person1;
     private static Person person2;
@@ -27,10 +35,9 @@ public class PersonRepositoryTest {
         person2 = new Person("Mark", "Boyd", "1509 Culver St", "Culver",
                 97451, "898-353-6978", "maboyd@email.com");
 
-        StoredData storedData = new StoredData();
-        storedData.setPersonList(Arrays.asList(person1, person2));
+        when(dataStore.getPersonList()).thenReturn(Arrays.asList(person1, person2));
 
-        personRepository = new PersonRepository(storedData);
+        personRepository = new PersonRepository(dataStore);
     }
 
     @Test

@@ -1,19 +1,24 @@
 package com.safetynet.Alerts.unit.repository;
 
-import com.safetynet.Alerts.data.StoredData;
+import com.safetynet.Alerts.data.DataStore;
 import com.safetynet.Alerts.model.FireStation;
 import com.safetynet.Alerts.repository.FireStationRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class FireStationRepositoryTest {
 
     private FireStationRepository fireStationRepository;
@@ -21,15 +26,17 @@ public class FireStationRepositoryTest {
     private static FireStation fire1;
     private static FireStation fire2;
 
+    @Mock
+    private DataStore dataStore;
+
     @Before
     public void setUp() {
         fire1 = new FireStation("29 15th St", 2);
         fire2 = new FireStation("644 Gershwin Cir", 1);
 
-        StoredData storedData = new StoredData();
-        storedData.setFireStationList(Arrays.asList(fire1, fire2));
+        when(dataStore.getFireStationList()).thenReturn(Arrays.asList(fire1, fire2));
 
-        fireStationRepository = new FireStationRepository(storedData);
+        fireStationRepository = new FireStationRepository(dataStore);
     }
 
     @Test

@@ -1,20 +1,28 @@
 package com.safetynet.Alerts.unit.repository;
 
-import com.safetynet.Alerts.data.StoredData;
+import com.safetynet.Alerts.data.DataStore;
 import com.safetynet.Alerts.model.MedicalRecord;
 import com.safetynet.Alerts.repository.MedicalRecordRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MedicalRecordRepositoryTest {
 
     private MedicalRecordRepository medicalRecordRepository;
+
+    @Mock
+    private DataStore dataStore;
 
     private static MedicalRecord med1;
     private static MedicalRecord med2;
@@ -26,10 +34,9 @@ public class MedicalRecordRepositoryTest {
         med2 = new MedicalRecord("Tony", "Cooper", "04/20/2002",
                 Arrays.asList("ibupurin:200mg"), Arrays.asList("peanut"));
 
-        StoredData storedData = new StoredData();
-        storedData.setMedicalRecordList(Arrays.asList(med1, med2));
+        when(dataStore.getMedicalRecordList()).thenReturn(Arrays.asList(med1, med2));
 
-        medicalRecordRepository = new MedicalRecordRepository(storedData);
+        medicalRecordRepository = new MedicalRecordRepository(dataStore);
     }
 
     @Test
