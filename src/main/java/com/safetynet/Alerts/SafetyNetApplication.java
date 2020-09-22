@@ -1,6 +1,5 @@
 package com.safetynet.Alerts;
 
-import com.safetynet.Alerts.data.DataStore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -26,14 +25,5 @@ public class SafetyNetApplication {
 	 */
 	public static void main(final String[] args) {
 		SpringApplication.run(SafetyNetApplication.class, args);
-	}
-
-     /**
-	 * Loads application data by calling DataStore.loadData method.
-	 */
-	public void loadSafetyNetData() throws Exception {
-		LOGGER.debug("Read Data File");
-		DataStore init = new DataStore();
-		init.loadData();
 	}
 }
